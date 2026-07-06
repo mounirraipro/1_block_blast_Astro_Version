@@ -1,0 +1,20 @@
+---
+import LevelCollectionPage from "@/components/LevelCollectionPage.astro";
+import { allLevels } from "@/data/gameData";
+
+const expertLevels = allLevels.filter(({ level }) => ["Difficile", "Expert"].includes(level.difficulty));
+---
+
+<LevelCollectionPage
+  title="Jeux de blocs difficiles"
+  description="Reperes difficiles pour progresser dans Block Blast, mieux anticiper les formes et garder une grille jouable."
+  eyebrow="Niveau difficile"
+  heading="Des placements plus exigeants."
+  intro="Ces reperes s'adressent aux joueurs qui veulent travailler l'ordre des pieces, les nettoyages doubles et la gestion des zones mortes."
+  levels={expertLevels.map(({ category, level }) => ({ categoryName: category.name, categoryColor: category.color, level }))}
+  notes={[
+    "Les niveaux difficiles demandent plus d'anticipation.",
+    "Gardez une grande zone libre avant de chercher les combos.",
+    "Les meilleurs coups sont ceux qui rendent le prochain placement plus simple."
+  ]}
+/>

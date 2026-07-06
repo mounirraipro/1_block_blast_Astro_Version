@@ -1,0 +1,72 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCategoryAccentClass } from "@/data/accentClasses";
+import type { GameCategory, GameLevel } from "@/data/gameData";
+
+type Props = {
+  title: string;
+  description: string;
+  heading: string;
+  intro: string;
+  category: GameCategory;
+  level: GameLevel;
+  related: GameLevel[];
+};
+
+const { title, description, heading, intro, category, level, related } = Astro.props;
+const accentClass = getCategoryAccentClass(category.name);
+const previewImage = level.thumbnail;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="listing-shell level-spotlight">
+    <header class="listing-header">
+      <p class="eyebrow">Niveau {category.name}</p>
+      <h1>{heading}</h1>
+      <p>{intro}</p>
+    </header>
+
+    <div class:list={["level-hero-card", accentClass]}>
+      <img src={previewImage} alt={`Apercu ${heading}`} width="1200" height="800" />
+      <div>
+        <span>{level.gridSize} - {level.difficulty}</span>
+        <strong class="level-hero-title">{level.title}</strong>
+        <p>{category.longDescription}</p>
+        <a class="primary-action" href="/play/"><span class="play-triangle"></span>Jouer a ce puzzle</a>
+      </div>
+    </div>
+
+    <section class="seo-copy-section" aria-labelledby={`${level.id}-spotlight-guide`}>
+      <div class="section-head">
+        <h2 id={`${level.id}-spotlight-guide`}>Notes {heading}</h2>
+      </div>
+      <div class="seo-copy-grid">
+        <article class="seo-copy-card seo-copy-wide">
+          <h3>A propos de ce puzzle {category.name.toLowerCase()}</h3>
+          <p>{heading} fait partie des reperes de jeu de blockblast.fr. Ce niveau utilise une grille {level.gridSize} avec une difficulte {level.difficulty.toLowerCase()}, utile pour travailler le placement, l'espace libre et les decisions propres dans un puzzle de blocs.</p>
+        </article>
+        <article class="seo-copy-card">
+          <h3>Comment l'aborder</h3>
+          <p>Regardez les formes disponibles avant de jouer et choisissez l'ordre qui garde le plus d'espace. Les grandes pieces doivent souvent etre placees avant les petites.</p>
+        </article>
+        <article class="seo-copy-card">
+          <h3>Ce qu'il faut pratiquer</h3>
+          <p>Travaillez les nettoyages propres, les coins sans trous et les placements qui rendent le prochain coup plus simple.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <p class="section-title-like">Autres reperes {category.name.toLowerCase()} apres {heading}</p>
+    </div>
+    <div class="level-grid">
+      {related.map((item) => (
+        <a class:list={["level-card", accentClass]} href="/play/">
+          <img src={item.thumbnail} alt={`Miniature ${item.title}`} width="640" height="360" loading="lazy" />
+          <strong>{item.title}</strong>
+          <span>{item.gridSize} - {item.difficulty}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

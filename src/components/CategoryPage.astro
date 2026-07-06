@@ -1,0 +1,59 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCategoryAccentClass } from "@/data/accentClasses";
+import { getCategoryBySlug } from "@/data/gameData";
+
+type Props = {
+  slug: string;
+};
+
+const { slug } = Astro.props;
+const category = getCategoryBySlug(slug);
+if (!category) throw new Error(`Missing category: ${slug}`);
+const accentClass = getCategoryAccentClass(category.name);
+const seoTitle = `${category.name} Block Blast - Guide puzzle blocs`;
+const seoDescription = category.description;
+const pageKind = "guide";
+const pageHeading = `${category.name} Block Blast.`;
+const guideHeading = `Guide ${category.name}.`;
+const difficultyNames = Array.from(new Set(category.levels.map((level) => level.difficulty))).join(", ");
+---
+
+<BaseLayout title={seoTitle} description={seoDescription}>
+  <section class="listing-shell">
+    <header class="listing-header">
+      <p class="eyebrow">Categorie Block Blast</p>
+      <h1>{pageHeading}</h1>
+      <p>{category.longDescription}</p>
+    </header>
+    <div class="level-grid">
+      {category.levels.map((level) => (
+        <a class:list={["level-card", accentClass]} href="/play/">
+          <img src={level.thumbnail} alt={`${level.title} puzzle thumbnail`} width="640" height="360" loading="lazy" />
+          <strong>{level.title}</strong>
+          <span>{level.gridSize} - {level.difficulty}</span>
+        </a>
+      ))}
+    </div>
+
+    <section class="seo-copy-section" aria-labelledby={`${category.slug}-${pageKind}-guide`}>
+      <div class="section-head">
+        <h2 id={`${category.slug}-${pageKind}-guide`}>{guideHeading}</h2>
+      </div>
+      <div class="seo-copy-grid">
+        <article class="seo-copy-card seo-copy-wide">
+          <h3>Vue d'ensemble {category.name}</h3>
+          <p>{category.longDescription} Cette page sert de repere SEO et editorial pour les joueurs qui cherchent une reponse precise autour de Block Blast, des jeux de blocs gratuits et des puzzles sans telechargement.</p>
+        </article>
+        <article class="seo-copy-card">
+          <h3>Niveau de difficulte</h3>
+          <p>La categorie {category.name.toLowerCase()} couvre les niveaux {difficultyNames}. Les reperes faciles conviennent aux debutants, tandis que les niveaux difficiles et expert ciblent les joueurs qui veulent optimiser leurs placements.</p>
+        </article>
+        <article class="seo-copy-card">
+          <h3>Approche conseillee</h3>
+          <p>Avant de poser une piece, regardez la grille comme un espace a proteger. Gardez les grandes zones libres, evitez les trous isoles et cherchez les nettoyages qui rendent le prochain coup plus simple.</p>
+        </article>
+      </div>
+    </section>
+  </section>
+</BaseLayout>

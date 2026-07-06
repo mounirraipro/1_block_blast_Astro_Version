@@ -1,0 +1,20 @@
+---
+import LevelCollectionPage from "@/components/LevelCollectionPage.astro";
+import { allLevels } from "@/data/gameData";
+
+const beginnerLevels = allLevels.filter(({ level }) => ["Facile", "Moyen"].includes(level.difficulty));
+---
+
+<LevelCollectionPage
+  title="Jeux de blocs faciles"
+  description="Commencez avec des reperes faciles pour apprendre Block Blast, les placements propres et les puzzles de blocs sans telechargement."
+  eyebrow="Niveau facile"
+  heading="Commencer avec une grille lisible."
+  intro="Ces reperes sont les plus simples pour apprendre a placer les blocs, garder l'espace ouvert et preparer des lignes."
+  levels={beginnerLevels.map(({ category, level }) => ({ categoryName: category.name, categoryColor: category.color, level }))}
+  notes={[
+    "Les niveaux faciles et moyens sont utiles pour apprendre le placement.",
+    "Utilisez ces reperes pour des sessions rapides ou des echauffements.",
+    "Aucun compte ni telechargement n'est necessaire pour ouvrir la page de jeu."
+  ]}
+/>

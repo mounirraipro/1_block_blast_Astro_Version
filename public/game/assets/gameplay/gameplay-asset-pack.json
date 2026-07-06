@@ -1,0 +1,39 @@
+{
+    "section1": {
+        "files": [
+            {
+                "url": "assets/gameplay/ingame_bg.png",
+                "type": "image",
+                "key": "ingame_bg"
+            },
+            {
+                "url": "assets/gameplay/ingame_bg_dark.png",
+                "type": "image",
+                "key": "ingame_bg_dark"
+            },
+            {
+                "url": "assets/gameplay/lvl_completed_bg.png",
+                "type": "image",
+                "key": "lvl_completed_bg"
+            },
+            {
+                "atlasURL": "assets/gameplay/pak_gameplay.json",
+                "textureURL": "assets/gameplay/pak_gameplay.png",
+                "type": "atlas",
+                "key": "pak_gameplay"
+            },
+            {
+                "url": "assets/gameplay/so_close_bg.png",
+                "type": "image",
+                "key": "so_close_bg"
+            }
+        ]
+    },
+    "meta": {
+        "app": "Phaser Editor 2D - Asset Pack Editor",
+        "contentType": "phasereditor2d.pack.core.AssetContentType",
+        "url": "https://phasereditor2d.com",
+        "version": 2,
+        "showAllFilesInBlocks": false
+    }
+}

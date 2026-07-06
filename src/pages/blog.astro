@@ -1,0 +1,69 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { articles } from "@/data/articles";
+
+const dateFormatter = new Intl.DateTimeFormat("fr-FR", { month: "short", day: "numeric", year: "numeric" });
+const [featuredPost, ...restPosts] = articles;
+const categories = Array.from(
+  articles.reduce((map, article) => {
+    map.set(article.category, (map.get(article.category) ?? 0) + 1);
+    return map;
+  }, new Map<string, number>()),
+).sort(([a], [b]) => a.localeCompare(b));
+---
+
+<BaseLayout title="Blog Block Blast" description="Guides Block Blast en francais: comment jouer, astuces, strategie, sans telechargement, PC et meilleurs jeux comme Block Blast.">
+  <main class="blog-card-page">
+    <header class="blog-card-hero" aria-labelledby="blog-directory-title">
+      <div class="blog-card-hero-copy">
+        <p>{articles.length} articles sur {categories.length} themes</p>
+        <h1 id="blog-directory-title">Blog Block Blast</h1>
+        <span>Guides courts, astuces et reponses directes pour les joueurs de puzzles de blocs.</span>
+      </div>
+      <nav class="blog-card-topics" aria-label="Themes du blog">
+        {categories.slice(0, 8).map(([category, count]) => (
+          <span>
+            <strong>{category}</strong>
+            <small>{count}</small>
+          </span>
+        ))}
+      </nav>
+    </header>
+
+    <h2 class="sr-only">Articles du blog</h2>
+
+    {featuredPost && (
+      <a class="blog-feature-card" href={`/blog/${featuredPost.slug}/`}>
+        <div>
+          <p>A la une / {featuredPost.category}</p>
+          <h3>{featuredPost.title}</h3>
+          <span>{featuredPost.description}</span>
+        </div>
+        <footer>
+          <time datetime={featuredPost.datePublished}>{dateFormatter.format(new Date(featuredPost.datePublished))}</time>
+          <small>{featuredPost.readTime}</small>
+        </footer>
+      </a>
+    )}
+
+    <section class="blog-card-section" id="article-list" aria-labelledby="blog-list-title">
+      <header>
+        <h3 id="blog-list-title">Tous les articles</h3>
+        <span>{restPosts.length} autres guides</span>
+      </header>
+      <div class="blog-card-grid">
+        {restPosts.map((post) => (
+          <a class="blog-post-card" href={`/blog/${post.slug}/`}>
+            <div class="blog-post-card-top">
+              <span>{post.category}</span>
+              <time datetime={post.datePublished}>{dateFormatter.format(new Date(post.datePublished))}</time>
+            </div>
+            <h3>{post.title}</h3>
+            <p>{post.description}</p>
+            <small>{post.readTime}</small>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

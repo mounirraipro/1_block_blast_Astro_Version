@@ -1,0 +1,75 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCategoryAccentClass } from "@/data/accentClasses";
+import type { GameLevel } from "@/data/gameData";
+
+type LevelItem = {
+  categoryName: string;
+  categoryColor: string;
+  level: GameLevel;
+};
+
+type Props = {
+  title: string;
+  description: string;
+  eyebrow: string;
+  heading: string;
+  intro: string;
+  levels: LevelItem[];
+  notes?: string[];
+};
+
+const { title, description, eyebrow, heading, intro, levels, notes = [] } = Astro.props;
+const categoryNames = Array.from(new Set(levels.map(({ categoryName }) => categoryName))).join(", ");
+const difficultyNames = Array.from(new Set(levels.map(({ level }) => level.difficulty))).join(", ");
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="listing-shell level-collection">
+    <header class="listing-header">
+      <p class="eyebrow">{eyebrow}</p>
+      <h1>{heading}</h1>
+      <p>{intro}</p>
+    </header>
+
+    {notes.length > 0 && (
+      <div class="level-note-grid">
+        {notes.map((note) => (
+          <article>
+            <p>{note}</p>
+          </article>
+        ))}
+      </div>
+    )}
+
+    <div class="level-grid">
+      {levels.map(({ categoryName, level }) => (
+        <a class:list={["level-card", getCategoryAccentClass(categoryName)]} href="/play/">
+          <img src={level.thumbnail} alt={`Miniature ${level.title}`} width="640" height="360" loading="lazy" />
+          <strong>{level.title}</strong>
+          <span>{categoryName} - {level.gridSize} - {level.difficulty}</span>
+        </a>
+      ))}
+    </div>
+
+    <section class="seo-copy-section" aria-labelledby="level-collection-guide">
+      <div class="section-head">
+        <h2 id="level-collection-guide">Guide {heading}</h2>
+      </div>
+      <div class="seo-copy-grid">
+        <article class="seo-copy-card seo-copy-wide">
+          <h3>Ce que contient cette selection</h3>
+          <p>Cette page regroupe {levels.length} reperes de jeu autour de {categoryNames}. Elle sert a organiser les intentions de recherche liees aux puzzles de blocs, aux placements et aux parties sans telechargement.</p>
+        </article>
+        <article class="seo-copy-card">
+          <h3>Difficulte et rythme</h3>
+          <p>Les reperes visibles incluent les niveaux {difficultyNames}. Les niveaux faciles aident a apprendre les bases, tandis que les niveaux difficiles encouragent une meilleure anticipation des formes et une grille plus propre.</p>
+        </article>
+        <article class="seo-copy-card">
+          <h3>Comment jouer plus proprement</h3>
+          <p>Avant de poser une piece, regardez les espaces disponibles et l'ordre des formes. Placez les grandes pieces tot, evitez les trous isoles et acceptez les petits nettoyages qui gardent la grille ouverte.</p>
+        </article>
+      </div>
+    </section>
+  </section>
+</BaseLayout>

@@ -1,0 +1,114 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCategoryAccentClass } from "@/data/accentClasses";
+import { siteConfig } from "@/data/siteConfig";
+import { categories } from "@/data/gameData";
+
+const playSteps = [
+  ["1", "Observer", "Regardez les formes disponibles."],
+  ["2", "Placer", "Posez les blocs sans fermer la grille."],
+  ["3", "Nettoyer", "Completez lignes ou colonnes."],
+];
+
+const tips = [
+  "Gardez une grande zone libre.",
+  "Posez les grandes pieces avant les petites.",
+  "Evitez les trous d'une case.",
+];
+---
+
+<BaseLayout
+  title={`Jouer a ${siteConfig.name} en ligne`}
+  description="Jouez a Block Blast en ligne gratuitement sur navigateur, sans telechargement. Placez les blocs, effacez les lignes et gardez la grille ouverte."
+>
+  <section class="play-stage" id="top">
+    <div class="play-stage-bg" aria-hidden="true"></div>
+    <div class="play-shell" data-game-shell>
+      <iframe src="/game/" title="Jeu Block Blast" allow="autoplay; fullscreen *" allowfullscreen></iframe>
+      <div class="play-float-controls">
+        <button type="button" data-share-game aria-label="Partager le jeu">
+          <span>Partager</span>
+        </button>
+        <button type="button" data-fullscreen-game aria-label="Plein ecran">
+          <span>Plein ecran</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="play-info-section">
+    <div class="play-info-head">
+      <p class="eyebrow">Jouer en ligne</p>
+      <h1>Block Blast dans votre navigateur.</h1>
+      <p>Gratuit, rapide, sans compte et pret pour les fichiers finaux du jeu.</p>
+    </div>
+    <div class="play-step-grid">
+      {playSteps.map(([number, title, text]) => (
+        <article>
+          <span>{number}</span>
+          <strong>{title}</strong>
+          <p>{text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="play-info-section play-split-section">
+    <div>
+      <p class="eyebrow">Categories</p>
+      <p class="play-panel-title">Choisissez un guide.</p>
+      <div class="play-category-pills">
+        {categories.map((category) => <a class={getCategoryAccentClass(category.name)} href={`/categories/${category.slug}/`}>{category.name}</a>)}
+      </div>
+    </div>
+    <div class="play-tip-panel">
+      <p class="eyebrow">Astuces</p>
+      <ul>
+        {tips.map((tip) => <li>{tip}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="play-info-section seo-copy-section" aria-labelledby="play-page-guide">
+    <div class="section-head">
+      <h2 id="play-page-guide">Guide de jeu.</h2>
+    </div>
+    <div class="seo-copy-grid">
+      <article class="seo-copy-card seo-copy-wide">
+        <h3>Block Blast en ligne et sans telechargement</h3>
+        <p>blockblast.fr est prepare pour proposer une experience de puzzle blocs directement dans le navigateur. La zone de jeu actuelle utilise des fichiers placeholder propres afin que vous puissiez remplacer plus tard le dossier public/game par vos fichiers finaux, sans modifier la structure SEO du site.</p>
+      </article>
+      <article class="seo-copy-card">
+        <h3>Comment commencer</h3>
+        <p>Regardez les pieces disponibles, posez d'abord les formes les plus encombrantes, puis completez des lignes ou colonnes pour liberer de l'espace. Une grille ouverte est plus importante qu'un placement rapide.</p>
+      </article>
+      <article class="seo-copy-card">
+        <h3>Statut du site</h3>
+        <p>blockblast.fr est independant. Le site ne se presente pas comme l'application officielle Block Blast ni comme son editeur. Les guides sont originaux et ecrits pour aider les joueurs francophones.</p>
+      </article>
+    </div>
+  </section>
+  <script is:inline>
+    (() => {
+      const shell = document.querySelector("[data-game-shell]");
+      const iframe = shell?.querySelector("iframe");
+      const fullscreen = document.querySelector("[data-fullscreen-game]");
+      const share = document.querySelector("[data-share-game]");
+      fullscreen?.addEventListener("click", async () => {
+        const active = document.fullscreenElement;
+        if (active) {
+          await document.exitFullscreen?.();
+          return;
+        }
+        await (iframe?.requestFullscreen?.() ?? shell?.requestFullscreen?.());
+      });
+      share?.addEventListener("click", async () => {
+        const data = { title: "Block Blast", text: "Jouer a Block Blast en ligne.", url: location.href };
+        try {
+          if (navigator.share) await navigator.share(data);
+          else await navigator.clipboard?.writeText(location.href);
+        } catch {}
+      });
+    })();
+  </script>
+</BaseLayout>

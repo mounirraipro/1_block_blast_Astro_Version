@@ -1,0 +1,294 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { articles } from "@/data/articles";
+import { categories } from "@/data/gameData";
+import { externalGames } from "@/data/externalGames";
+import { siteConfig } from "@/data/siteConfig";
+import { brandAccentClass, getCategoryAccentClass } from "@/data/accentClasses";
+
+const recentPosts = articles.slice(0, 3);
+const featuredCategories = categories;
+const homeBentoGames = [
+  {
+    href: "/play/",
+    title: "Block Blast en ligne",
+    shortTitle: "Block Blast",
+    category: "Jeu principal",
+    thumbnail: "/game-thumbs/game-placeholder.png",
+    accent: "#16a34a",
+    accentClass: brandAccentClass,
+  },
+  ...externalGames.map((game) => ({
+    href: `/games/${game.slug}/`,
+    title: game.title,
+    shortTitle: game.shortTitle,
+    category: game.category,
+    thumbnail: game.thumbnail,
+    accent: game.accent,
+    accentClass: game.accentClass,
+  })),
+].slice(0, 8);
+const homeBentoLeft = homeBentoGames.slice(0, 4);
+const homeBentoRight = homeBentoGames.slice(4, 8);
+
+const faqItems = [
+  ["blockblast.fr est-il officiel ?", "Non. blockblast.fr est un site independant et ne pretend pas etre l'application officielle Block Blast ni son editeur."],
+  ["Peut-on jouer a Block Blast en ligne ?", "Oui. Le site est prepare pour une experience navigateur gratuite, sans telechargement, avec une zone de jeu que vous pourrez remplacer par vos fichiers finaux."],
+  ["Comment gagner plus longtemps ?", "Gardez une grande zone libre, posez les pieces encombrantes tot et evitez les trous isoles qui bloquent les formes suivantes."],
+  ["Block Blast fonctionne-t-il sur PC ?", "Oui. Un navigateur moderne sur PC offre une grille plus lisible et des placements precis a la souris."],
+  ["Quels jeux ressemblent a Block Blast ?", "Block Puzzle, Sudoku Block Puzzle, 2048 Merge Blocks et d'autres puzzles de logique sont de bonnes alternatives."],
+];
+
+const homeStructuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    name: "Block Blast",
+    alternateName: ["Block Blast en ligne", "Block Blast gratuit", "Jeu de blocs gratuit"],
+    url: `${siteConfig.siteUrl}/`,
+    image: new URL(siteConfig.defaultOgImage, siteConfig.siteUrl).href,
+    description: siteConfig.description,
+    applicationCategory: "Game",
+    gamePlatform: ["Navigateur web", "PC", "Mobile", "Tablette"],
+    genre: ["Puzzle blocs", "Block puzzle", "Jeu de placement"],
+    operatingSystem: "Tout navigateur moderne",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.publisherName,
+      url: siteConfig.siteUrl,
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map(([question, answer]) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: answer,
+      },
+    })),
+  },
+];
+---
+
+<BaseLayout title={siteConfig.name} description={siteConfig.description} structuredData={homeStructuredData}>
+  <section class="hero-play">
+    <div class="home-game-lobby">
+      <div class="game-bento-grid game-bento-grid-side" aria-label="Jeux disponibles">
+        {homeBentoLeft.map((game, index) => (
+          <a class:list={["game-bento-card", game.accentClass, { "game-bento-card-featured": index === 0 }]} href={game.href}>
+            <img src={game.thumbnail} alt={`Miniature ${game.title}`} width="640" height="360" loading="lazy" />
+            <div>
+              <span>{game.category}</span>
+              <strong>{game.shortTitle}</strong>
+            </div>
+          </a>
+        ))}
+      </div>
+      <div class="hero-game">
+        <iframe src="/game/" title="Jouer a Block Blast" loading="eager"></iframe>
+      </div>
+      <div class="game-bento-grid game-bento-grid-side" aria-label="Autres jeux">
+        {homeBentoRight.map((game, index) => (
+          <a class:list={["game-bento-card", game.accentClass, { "game-bento-card-featured": index === 0 }]} href={game.href}>
+            <img src={game.thumbnail} alt={`Miniature ${game.title}`} width="640" height="360" loading="lazy" />
+            <div>
+              <span>{game.category}</span>
+              <strong>{game.shortTitle}</strong>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+    <div class="hero-copy">
+      <div class="hero-copy-main">
+        <p class="eyebrow">Jeu gratuit en navigateur</p>
+        <h1>Block Blast en ligne</h1>
+        <p>Jouez a un puzzle de blocs gratuit directement sur blockblast.fr. Placez les formes, liberez des lignes et gardez la grille ouverte, sans telechargement ni compte.</p>
+        <a class="text-link hero-note" href="/disclaimer/">Site independant, non officiel</a>
+      </div>
+      <div class="hero-play-panel">
+        <div class="hero-panel-top">
+          <span>Sans installation</span>
+          <strong>Ouvrez la page et jouez.</strong>
+        </div>
+        <div class="hero-actions">
+          <a class="primary-action" href="/play/"><span class="play-triangle"></span>Jouer en grand</a>
+          <a class="secondary-action" href="/how-to-play/">Comment jouer</a>
+        </div>
+        <dl class="stat-row">
+          <div><dt>{externalGames.length}+</dt><dd>Jeux proches</dd></div>
+          <div><dt>{categories.length}</dt><dd>Categories</dd></div>
+          <div><dt>{articles.length}</dt><dd>Guides</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section home-search-intent">
+    <div class="home-section-head split-head">
+      <div>
+        <p class="eyebrow">Reponse directe</p>
+        <h2>Jouer a Block Blast sans telechargement.</h2>
+      </div>
+      <p>La page cible les recherches utiles: Block Blast en ligne, Block Blast gratuit, Block Blast sur PC, jeu de blocs gratuit et jeux comme Block Blast.</p>
+    </div>
+    <div class="process-strip">
+      <article>
+        <span>01</span>
+        <h3>Placez</h3>
+        <p>Glissez les formes sur la grille. Chaque placement doit laisser de l'espace pour les pieces suivantes.</p>
+      </article>
+      <article>
+        <span>02</span>
+        <h3>Effacez</h3>
+        <p>Completez des lignes ou colonnes pour liberer de la place et prolonger la partie.</p>
+      </article>
+      <article>
+        <span>03</span>
+        <h3>Anticipez</h3>
+        <p>Regardez les pieces disponibles ensemble avant de choisir l'ordre de placement.</p>
+      </article>
+      <article>
+        <span>04</span>
+        <h3>Progressez</h3>
+        <p>Lisez les <a href="/difficulty-guide/">astuces Block Blast</a> et le <a href="/strategy/">guide de strategie</a>.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="home-section home-authority">
+    <div class="authority-panel">
+      <div class="home-section-head">
+        <p class="eyebrow">Positionnement clair</p>
+        <h3>Un site francais independant.</h3>
+        <p>
+          <a class="site-identity-link" href="/"><strong>blockblast.fr</strong></a> propose une experience navigateur et des guides originaux. Le site ne pretend pas etre l'application officielle Block Blast ni son editeur.
+        </p>
+      </div>
+      <div class="authority-links" aria-label="Liens de contexte">
+        <a href="/how-to-play/">
+          <span>Guide</span>
+          <strong>Comment jouer</strong>
+          <small>Les regles de base en quelques etapes.</small>
+        </a>
+        <a href="/game-mechanics/">
+          <span>PC</span>
+          <strong>Jouer sur PC</strong>
+          <small>Confort navigateur, souris et grand ecran.</small>
+        </a>
+        <a href="/games/">
+          <span>Alternatives</span>
+          <strong>Jeux similaires</strong>
+          <small>Block puzzle, Sudoku blocks et autres options.</small>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section home-worlds">
+    <div class="home-section-head">
+      <p class="eyebrow">Intentions SEO</p>
+      <h3>Guides par besoin de recherche.</h3>
+      <p>Chaque categorie correspond a une intention longue traine autour des jeux de blocs.</p>
+    </div>
+    <div class="world-showcase">
+      <a class:list={["world-feature", getCategoryAccentClass(featuredCategories[0].name)]} href="/categories/animals/">
+        <img src={featuredCategories[0].levels[0]?.thumbnail} alt="Categorie placement de blocs" width="640" height="360" loading="lazy" />
+        <div>
+          <span>{featuredCategories[0].name}</span>
+          <strong>Commencez par le placement.</strong>
+          <small>{featuredCategories[0].levels.length} reperes de jeu</small>
+        </div>
+      </a>
+      <div class="world-stack">
+        {featuredCategories.slice(1).map((category) => (
+          <a class:list={["world-card", getCategoryAccentClass(category.name)]} href={`/categories/${category.slug}/`}>
+            <img src={category.levels[0]?.thumbnail} alt={`Categorie ${category.name}`} width="640" height="360" loading="lazy" />
+            <div>
+              <span>{category.name}</span>
+              <small>{category.levels.length} reperes</small>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section home-blog">
+    <div class="blog-editorial">
+      <div class="home-section-head">
+        <p class="eyebrow">Guides</p>
+        <h3>Articles Block Blast.</h3>
+        <p>Des reponses courtes pour les recherches francaises les plus utiles.</p>
+        <a class="text-link" href="/blog/">Voir le blog</a>
+      </div>
+      <div class="blog-board">
+        <a class="editorial-card editorial-card-featured" href={`/blog/${recentPosts[0].slug}/`}>
+          <span>{recentPosts[0].category}</span>
+          <h3>{recentPosts[0].title}</h3>
+          <p>{recentPosts[0].description}</p>
+          <small>{recentPosts[0].readTime}</small>
+        </a>
+        <div class="article-rail">
+          {recentPosts.slice(1).map((post) => (
+            <a class="editorial-card editorial-card-row" href={`/blog/${post.slug}/`}>
+              <span>{post.category}</span>
+              <h3>{post.title}</h3>
+              <small>{post.readTime}</small>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section home-faq">
+    <div class="faq-layout">
+      <div class="faq-cardlet">
+        <p class="eyebrow">FAQ</p>
+        <h3>Reponses rapides.</h3>
+        <p>Les points importants avant de lancer une partie.</p>
+      </div>
+      <div class="faq-list" data-faq-list>
+        {faqItems.map(([question, answer]) => (
+          <details>
+            <summary>{question}</summary>
+            <p>{answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="home-cta">
+    <div>
+      <p class="eyebrow">Pret ?</p>
+      <h3>Ouvrez la grille et commencez a placer les blocs.</h3>
+    </div>
+    <a class="primary-action" href="/play/"><span class="play-triangle"></span>Jouer a Block Blast</a>
+  </section>
+
+  <script is:inline>
+    (() => {
+      document.querySelectorAll("[data-faq-list]").forEach((list) => {
+        list.querySelectorAll("details").forEach((item) => {
+          item.addEventListener("toggle", () => {
+            if (!item.open) return;
+            list.querySelectorAll("details[open]").forEach((other) => {
+              if (other !== item) other.open = false;
+            });
+          });
+        });
+      });
+    })();
+  </script>
+</BaseLayout>

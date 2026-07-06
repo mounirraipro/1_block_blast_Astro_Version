@@ -1,0 +1,135 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { externalGames } from "@/data/externalGames";
+import { brandAccentClass } from "@/data/accentClasses";
+import { siteConfig } from "@/data/siteConfig";
+
+const featuredGames = [
+  {
+    href: "/play/",
+    title: "Block Blast en ligne",
+    shortTitle: "Block Blast",
+    category: "Jeu principal",
+    description: "Placez les blocs, completez des lignes et jouez dans le navigateur sans telechargement.",
+    thumbnail: "/game-thumbs/game-placeholder.png",
+    accentClass: brandAccentClass,
+  },
+  ...externalGames.slice(0, 3).map((game) => ({
+    href: `/games/${game.slug}/`,
+    title: game.title,
+    shortTitle: game.shortTitle,
+    category: game.category,
+    description: game.description,
+    thumbnail: game.thumbnail,
+    accentClass: game.accentClass,
+  })),
+];
+
+const directoryGames = [
+  {
+    href: "/play/",
+    title: "Block Blast en ligne",
+    shortTitle: "Block Blast",
+    category: "Puzzle blocs",
+    description: "L'experience principale de blockblast.fr, preparee pour vos fichiers finaux dans public/game.",
+    thumbnail: "/game-thumbs/game-placeholder.png",
+    accentClass: brandAccentClass,
+  },
+  ...externalGames.map((game) => ({
+    href: `/games/${game.slug}/`,
+    title: game.title,
+    shortTitle: game.shortTitle,
+    category: game.category,
+    description: game.description,
+    thumbnail: game.thumbnail,
+    accentClass: game.accentClass,
+  })),
+];
+
+const itemListStructuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Jeux comme Block Blast",
+    itemListElement: directoryGames.map((game, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: game.title,
+      url: new URL(game.href, siteConfig.siteUrl).href,
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title="Jeux comme Block Blast"
+  description="Jouez a des jeux comme Block Blast en ligne: block puzzle, Sudoku Block Puzzle, 2048, Mahjong Connect et autres jeux de logique gratuits."
+  structuredData={itemListStructuredData}
+>
+  <section class="games-directory">
+    <header class="games-directory-hero">
+      <div>
+        <h1>Jeux comme Block Blast.</h1>
+        <p>Une selection de jeux de blocs, de logique et de puzzle gratuits jouables dans le navigateur, avec des pages SEO et iframes Playgama pretes a construire.</p>
+      </div>
+      <a class="games-directory-action" href="/play/"><span></span>Jouer a Block Blast</a>
+    </header>
+
+    <div class="games-feature-rail" aria-label="Jeux mis en avant">
+      {featuredGames.map((game, index) => (
+        <a class:list={["games-feature-link", game.accentClass]} href={game.href}>
+          <img src={game.thumbnail} alt={`Miniature ${game.title}`} width="640" height="360" loading="lazy" />
+          <div>
+            <span>{game.category}</span>
+            <strong>{game.shortTitle}</strong>
+          </div>
+          <small>{index === 0 ? "Commencer ici" : "Jeu proche"}</small>
+        </a>
+      ))}
+    </div>
+
+    <section class="games-directory-main" aria-labelledby="games-directory-title">
+      <div class="games-directory-intro">
+        <h2 id="games-directory-title">Choisir un jeu</h2>
+        <p>{directoryGames.length} jeux et alternatives pour les joueurs qui cherchent Block Blast gratuit, puzzle blocs ou jeu de blocs sans telechargement.</p>
+      </div>
+
+      <div class="games-directory-list">
+        {directoryGames.map((game, index) => (
+          <a class:list={["games-directory-row", game.accentClass]} href={game.href}>
+            <span class="games-directory-number">{String(index + 1).padStart(2, "0")}</span>
+            <img src={game.thumbnail} alt={`Miniature ${game.title}`} width="320" height="180" loading="lazy" />
+            <div>
+              <span>{game.category}</span>
+              <h3>{game.title}</h3>
+              <p>{game.description}</p>
+            </div>
+            <span class="games-directory-arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                <path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="games-guide-strip" aria-labelledby="games-library-guide">
+      <h3 id="games-library-guide">Guide des alternatives</h3>
+      <div>
+        <article>
+          <h3>Qu'est-ce qu'un bon jeu comme Block Blast ?</h3>
+          <p>Un bon jeu proche de Block Blast doit etre rapide a comprendre, jouable sans telechargement et base sur des decisions claires. Les block puzzles, jeux de grille, fusions numeriques et puzzles de tuiles repondent bien a cette intention.</p>
+        </article>
+        <article>
+          <h3>Pourquoi garder les iframes Playgama</h3>
+          <p>Chaque jeu similaire conserve son identifiant Playgama afin que les routes se construisent correctement et que les pages puissent charger les jeux depuis leur iframe dediee.</p>
+        </article>
+        <article>
+          <h3>Position SEO</h3>
+          <p>La page cible les recherches longues comme jeux comme Block Blast, jeu puzzle blocs, block puzzle gratuit et jeux de blocs sans telechargement, moins concurrentielles que le seul mot cle principal.</p>
+        </article>
+      </div>
+    </section>
+  </section>
+</BaseLayout>

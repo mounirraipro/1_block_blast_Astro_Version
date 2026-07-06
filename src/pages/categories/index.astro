@@ -1,0 +1,46 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getCategoryAccentClass } from "@/data/accentClasses";
+import { categories } from "@/data/gameData";
+
+const categoryNames = categories.map((category) => category.name).join(", ");
+---
+
+<BaseLayout title="Categories Block Blast" description={`Parcourez les categories Block Blast et puzzle blocs: ${categoryNames}. Guides pour jouer en ligne, sur PC et sans telechargement.`}>
+  <section class="listing-shell">
+    <header class="listing-header">
+      <p class="eyebrow">Categories</p>
+      <h1>Intentions de recherche Block Blast.</h1>
+      <p>Chaque categorie couvre une facette utile: placement, lignes, strategie, PC, sans telechargement ou jeux similaires.</p>
+    </header>
+    <div class="category-grid">
+      {categories.map((category) => (
+        <a class:list={["media-card", getCategoryAccentClass(category.name)]} href={`/categories/${category.slug}/`}>
+          <img src={category.levels[0]?.thumbnail ?? category.levels[0]?.image} alt={`Categorie ${category.name}`} width="640" height="360" loading="lazy" />
+          <span>{category.name}</span>
+          <small>{category.levels.length} reperes</small>
+        </a>
+      ))}
+    </div>
+
+    <section class="seo-copy-section" aria-labelledby="category-guide">
+      <div class="section-head">
+        <h2 id="category-guide">Guide des categories.</h2>
+      </div>
+      <div class="seo-copy-grid">
+        <article class="seo-copy-card seo-copy-wide">
+          <h3>Pourquoi organiser Block Blast par intention</h3>
+          <p>Les joueurs ne cherchent pas tous la meme chose. Certains veulent jouer a Block Blast en ligne, d'autres cherchent des astuces, une version sans telechargement, une solution sur PC ou des jeux comme Block Blast. Ces categories orientent chaque besoin vers une page claire.</p>
+        </article>
+        <article class="seo-copy-card">
+          <h3>Longue traine francaise</h3>
+          <p>Les recherches comme jeu de blocs gratuit, jeu puzzle blocs, Block Blast sur PC ou Block Blast sans telechargement sont plus precises que le mot cle principal. Elles conviennent mieux a un site independant et informatif.</p>
+        </article>
+        <article class="seo-copy-card">
+          <h3>Remplacement des assets</h3>
+          <p>Les miniatures de cette premiere version sont volontairement des placeholders propres. Elles peuvent etre remplacees plus tard sans changer les routes ni le contenu SEO.</p>
+        </article>
+      </div>
+    </section>
+  </section>
+</BaseLayout>

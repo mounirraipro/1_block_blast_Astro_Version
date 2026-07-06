@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stringresources>
+    <strings>
+        <string id="text_settings">
+            <en>Settings</en>
+            <de>Einstellungen</de>
+            <es>Ajustes</es>
+            <fr>Paramètres</fr>
+            <it>Impostazioni</it>
+            <br>Definições</br>
+            <pt>Definições</pt>
+            <ru>настройки</ru>
+        </string>
+        <string id="text_high_score">
+            <en>High score</en>
+            <de>Hohe Punktzahl</de>
+            <es>Puntuación alta</es>
+            <fr>Score élevé</fr>
+            <it>Punteggio elevato</it>
+            <br>Pontuação alta</br>
+            <pt>Pontuação alta</pt>
+            <ru>Высокий балл</ru>
+        </string>
+        <string id="text_level">
+            <en>Level</en>
+            <de>Level</de>
+            <es>Nivel</es>
+            <fr>Niveau</fr>
+            <it>Livello</it>
+            <br>Nível</br>
+            <pt>Nível</pt>
+            <ru>Уровень</ru>
+        </string>
+        <string id="text_score">
+            <en>Score:</en>
+            <de>Ergebnis:</de>
+            <es>Puntuación:</es>
+            <fr>Score :</fr>
+            <it>Punteggio:</it>
+            <br>Pontuação:</br>
+            <pt>Pontuação:</pt>
+            <ru>Очки:</ru>
+        </string>
+        <string id="text_replay">
+            <en>Replay</en>
+            <de>Wiederholung</de>
+            <es>Replay</es>
+            <fr>Replay</fr>
+            <it>Replay</it>
+            <br>Replay</br>
+            <pt>Replay</pt>
+            <ru>Реплей</ru>
+        </string>
+        <string id="text_revive">
+            <en>Revive</en>
+            <de>Wiederbeleben</de>
+            <es>Revivar</es>
+            <fr>Raviver</fr>
+            <it>Rinascita</it>
+            <br>Reviver</br>
+            <pt>Reviver</pt>
+            <ru>Оживить</ru>
+        </string>
+        <string id="text_level_cleared">
+            <en>Level cleared</en>
+            <de>Level geräumt</de>
+            <es>Nivel despejado</es>
+            <fr>Niveau dégagé</fr>
+            <it>Livello sgomberato</it>
+            <br>Nível liberado</br>
+            <pt>Nível liberado</pt>
+            <ru>Уровень очищен</ru>
+        </string>
+        <string id="text_so_close">
+            <en>So close!</en>
+            <de>So nah dran!</de>
+            <es>¡Tan cerca!</es>
+            <fr>Tout près !</fr>
+            <it>Ci siamo quasi!</it>
+            <br>Tão perto!</br>
+            <pt>Tão perto!</pt>
+            <ru>Так близко!</ru>
+        </string>
+        <string id="text_next">
+            <en>Next</en>
+            <de>Nächste</de>
+            <es>Siguiente</es>
+            <fr>Suivant</fr>
+            <it>Avanti</it>
+            <br>Próximo</br>
+            <pt>Próximo</pt>
+            <ru>Следующий</ru>
+        </string>
+        <string id="text_well_done">
+            <en>Well done!</en>
+            <de>Gut gemacht!</de>
+            <es>¡Bien hecho!</es>
+            <fr>Bravo !</fr>
+            <it>Ben fatto!</it>
+            <br>Muito bem!</br>
+            <pt>Muito bem!</pt>
+            <ru>Молодцы!</ru>
+        </string>
+        <string id="text_target">
+            <en>Target:</en>
+            <de>Ziel:</de>
+            <es>Objetivo:</es>
+            <fr>Objectif:</fr>
+            <it>Obiettivo:</it>
+            <br>Objetivo:</br>
+            <pt>Objetivo:</pt>
+            <ru>Цель:</ru>
+        </string>
+        <string id="text_target_score">
+            <en>Target score</en>
+            <de>Zielpunktzahl</de>
+            <es>Puntuación objetivo</es>
+            <fr>Score cible</fr>
+            <it>Punteggio obiettivo</it>
+            <br>Pontuação alvo</br>
+            <pt>Pontuação alvo</pt>
+            <ru>Целевой счет</ru>
+        </string>
+        <string id="text_no_space">
+            <en>No more space!</en>
+            <de>Kein Platz mehr!</de>
+            <es>Se acabó el espacio</es>
+            <fr>Plus d'espace !</fr>
+            <it>Niente più spazio!</it>
+            <br>Não há mais espaço!</br>
+            <pt>Não há mais espaço!</pt>
+            <ru>Больше никакого пространства!</ru>
+        </string>
+        <string id="text_good">
+            <en>Good</en>
+            <de>Gut</de>
+            <es>Buena</es>
+            <fr>Bien</fr>
+            <it>Buono</it>
+            <br>Bom</br>
+            <pt>Bom</pt>
+            <ru>Хороший</ru>
+        </string>
+        <string id="text_great">
+            <en>Great</en>
+            <de>Großartig</de>
+            <es>Genial</es>
+            <fr>Excellent</fr>
+            <it>Ottimo</it>
+            <br>Excelente</br>
+            <pt>Excelente</pt>
+            <ru>Отлично</ru>
+        </string>
+        <string id="text_excellent">
+            <en>Excellent</en>
+            <de>Ausgezeichnet</de>
+            <es>Excelente</es>
+            <fr>Excellent</fr>
+            <it>Eccellente</it>
+            <br>Excelente</br>
+            <pt>Excelente</pt>
+            <ru>Превосходно</ru>
+        </string>
+        <string id="text_amazing">
+            <en>Amazing</en>
+            <de>Erstaunlich</de>
+            <es>Increíble</es>
+            <fr>Incroyable</fr>
+            <it>Incredibile</it>
+            <br>Incrível</br>
+            <pt>Incrível</pt>
+            <ru>Удивительно</ru>
+        </string>
+        <string id="text_combo">
+            <en>Combo</en>
+            <de>Kombi</de>
+            <es>Combo</es>
+            <fr>Combo</fr>
+            <it>Combo</it>
+            <br>Combo</br>
+            <pt>Combo</pt>
+            <ru>Комбо</ru>
+        </string>
+        <string id="text_loading">
+            <en>Loading</en>
+            <de>Laden</de>
+            <es>Cargando</es>
+            <fr>Chargement</fr>
+            <it>Caricamento</it>
+            <br>Carregando</br>
+            <pt>Carregando</pt>
+            <ru>Загрузка</ru>
+        </string>
+        <string id="text_menu">
+            <en>Menu</en>
+            <de>Menü</de>
+            <es>Menú</es>
+            <fr>Menu</fr>
+            <it>Menu</it>
+            <br>Menu</br>
+            <pt>Menu</pt>
+            <ru>Меню</ru>
+        </string>
+         <string id="text_next_level">
+            <en>Next level</en>
+            <de>Nächste level</de>
+            <es>Siguiente nivel</es>
+            <fr>Niveau suivant</fr>
+            <it>Livello successivo</it>
+            <br>Próximo nível</br>
+            <pt>Próximo nível</pt>
+            <ru>следующий уровень</ru>
+        </string>
+    </strings>
+</stringresources>

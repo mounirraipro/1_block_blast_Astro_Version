@@ -1,0 +1,14 @@
+---
+import BlogArticle from "@/components/BlogArticle.astro";
+import { articles } from "@/data/articles";
+
+export const getStaticPaths = () =>
+  articles.map((article) => ({
+    params: { slug: article.slug },
+  }));
+
+const article = articles.find((item) => item.slug === Astro.params.slug);
+if (!article) throw new Error(`Missing article: ${Astro.params.slug}`);
+---
+
+<BlogArticle article={article} />
