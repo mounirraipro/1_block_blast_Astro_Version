@@ -61,9 +61,12 @@ const routeHref = (path: string) => withTrailingSlash(path);
     <meta name="application-name" content={siteConfig.name} />
     <meta name="generator" content="Astro" />
     {siteConfig.emitMetaKeywords && pageSeo.keywords?.length && <meta name="keywords" content={[...new Set(pageSeo.keywords)].join(", ")} />}
-    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-    <link rel="shortcut icon" href="/icon.svg" />
-    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="canonical" href={canonicalUrl} />
     <meta property="og:site_name" content={siteConfig.name} />
     <meta property="og:type" content={pageSeo.schemaType === "Article" || pageSeo.schemaType === "Blog" ? "article" : "website"} />
