@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && node scripts/cleanup-dist-seo.mjs",
+    "build": "astro build && node scripts/cleanup-dist-seo.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check"
