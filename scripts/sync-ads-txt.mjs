@@ -2,8 +2,6 @@ import { writeFile } from "node:fs/promises";
 
 const source = "https://srv.adstxtmanager.com/19390/blockblast.fr";
 const destination = new URL("../public/ads.txt", import.meta.url);
-// Retain the site's existing AdSense authorization alongside Ezoic's entries.
-const adsenseEntry = "google.com, pub-1032974487169355, DIRECT, f08c47fec0942fa0";
 
 const response = await fetch(source, { signal: AbortSignal.timeout(20_000) });
 if (!response.ok) {
@@ -30,14 +28,6 @@ if (!records.some((line) => /^ezoic\.(?:ai|com)\s*,/i.test(line))) {
   throw new Error("ads.txt sync failed: the response has no Ezoic seller entry");
 }
 
-const hasAdsenseEntry = records.some((line) => {
-  const [domain, account] = line.split(",").map((field) => field.trim());
-  return domain.toLowerCase() === "google.com" && account === "pub-1032974487169355";
-});
-const output = hasAdsenseEntry
-  ? `${content}\n`
-  : `${content}\n\n# Existing site AdSense account\n${adsenseEntry}\n`;
-
 // Validate the complete response before replacing the existing file.
-await writeFile(destination, output, "utf8");
+await writeFile(destination, `${content}\n`, "utf8");
 console.log(`Updated public/ads.txt from ${source}`);

@@ -113814,7 +113814,7 @@
         game.input.pointers[a].active = !1;
       gamedist_showRewAd(b, f, h);
     },
-    active: !0,
+    active: !1,
   };
   const adCallback = function () {
       for (var a = 0; a < game.input.pointers.length; a++)
@@ -114145,152 +114145,12 @@
         },
       })));
   }
-  var ADS_ENABLED = !1,
-    ADS_DELAY = 14e4,
-    ADS_DEC = 2e4,
-    ADS_MINTIME = 9e4,
-    ADS_TIME_DEC_ENABLED = !0,
-    ADS_ON_FIRST_PLAY = !0,
-    ADS_MOBILE_WIDTH = 480,
-    ADS_MOBILE_HEIGHT = 800,
-    adinplay_onAdStarted = function () {},
+  // The host page handles advertising. Game transitions continue immediately.
+  var adinplay_onAdStarted = function () {},
     adinplay_onAdFinished = function () {};
-  function adinplay_init() {
-    if (ADS_ENABLED && "undefined" !== typeof aiptag) {
-      var a = "inlogic",
-        b = getJsonFromUrl();
-      b.hasOwnProperty("partner_id") && (a = b.partner_id);
-      aiptag = aiptag || {};
-      aiptag.cmd = aiptag.cmd || [];
-      aiptag.cmd.display = aiptag.cmd.display || [];
-      aiptag.cmd.player = aiptag.cmd.player || [];
-      aiptag.subid = a;
-      aiptag.consented = !0;
-      ads_time = 0;
-      ADS_ON_FIRST_PLAY && (ads_time = -ADS_DELAY);
-      aiptag.cmp = {
-        show: !0,
-        position: "centered",
-        button: !0,
-        buttonText: "Privacy settings",
-        buttonPosition: "bottom-left",
-      };
-      aiptag.cmd.player.push(function () {
-        var f = game.scale.width,
-          h = game.scale.height;
-        game.device.os.desktop ||
-          ((f = ADS_MOBILE_WIDTH), (h = ADS_MOBILE_HEIGHT));
-        adplayer = new aipPlayer({
-          AD_WIDTH: f,
-          AD_HEIGHT: h,
-          AD_FULLSCREEN: 1,
-          AD_CENTERPLAYER: 0,
-          AD_FADING: 0,
-          AD_DISPLAY: "default",
-          LOADING_TEXT: "loading advertisement",
-          PREROLL_ELEM: function () {
-            return document.getElementById("ads");
-          },
-          AIP_COMPLETE: function () {
-            adinplay_resumeMusic();
-            adinplay_enableInput();
-            adinplay_onAdStarted();
-            !0 === ADS_TIME_DEC_ENABLED &&
-              ADS_DELAY > ADS_MINTIME &&
-              (ADS_DELAY -= ADS_DEC);
-          },
-          AIP_REMOVE: function () {
-            adinplay_onAdFinished();
-          },
-          AIP_REWARDEDCOMPLETE: function (e) {
-            adinplay_resumeMusic();
-            adinplay_enableInput();
-            adinplay_rew_callbacks[1].call(adinplay_rew_callbacks[2]);
-          },
-          AIP_REWARDEDGRANTED: function () {
-            adinplay_resumeMusic();
-            adinplay_enableInput();
-            adinplay_rew_callbacks[0].call(adinplay_rew_callbacks[2]);
-          },
-        });
-      });
-    }
-  }
-  var ads_time = 0;
   function adinplay_playVideoAd() {
-    if (!ADS_ENABLED || Date.now() - ads_time < ADS_DELAY) {
-      adinplay_enableInput();
-      adinplay_onAdStarted();
-      return;
-    }
-    ads_time = Date.now();
-    window.BlockBlastH5Ads && window.BlockBlastH5Ads.showInterstitial
-      ? window.BlockBlastH5Ads.showInterstitial({
-          type: "start",
-          name: "game_start",
-          beforeAd: function () {
-            adinplay_disableInput();
-            adinplay_pauseMusic();
-          },
-          afterAd: function () {
-            adinplay_resumeMusic();
-            adinplay_enableInput();
-          },
-          onDone: function () {
-            adinplay_enableInput();
-            adinplay_onAdStarted();
-            !0 === ADS_TIME_DEC_ENABLED &&
-              ADS_DELAY > ADS_MINTIME &&
-              (ADS_DELAY -= ADS_DEC);
-          },
-        })
-      : (adinplay_enableInput(), adinplay_onAdStarted());
-  }
-  var adinplay_rew_callbacks = [];
-  function adinplay_playRewardedVideo(a, b, f) {
-    adinplay_rew_callbacks[0] = a;
-    adinplay_rew_callbacks[1] = b;
-    adinplay_rew_callbacks[2] = f;
-    ADS_ENABLED
-      ? "undefined" === typeof aiptag
-        ? (adinplay_init(), adinplay_enableInput(), b.call(f))
-        : "undefined" === typeof adplayer
-        ? (adinplay_init(), adinplay_enableInput(), b.call(f))
-        : (adinplay_disableInput(),
-          adinplay_pauseMusic(),
-          aiptag.cmd.player.push(function () {
-            adplayer.startRewardedAd({ preload: !1, showLoading: !0 });
-          }))
-      : (adinplay_enableInput(), b.call(f));
-  }
-  function adinplay_rewardedPreload() {
-    ADS_ENABLED &&
-      ("undefined" === typeof aiptag
-        ? adinplay_init()
-        : "undefined" === typeof adplayer
-        ? adinplay_init()
-        : (!0 !== aipAPItag.rewardedSlotEventListener &&
-            ((aipAPItag.rewardedSlotEventListener = !0),
-            aiptag.events.addEventListener(
-              "rewardedSlotReady",
-              function (a) {},
-              !1
-            )),
-          aiptag.cmd.player.push(function () {
-            adplayer.startRewardedAd({ preload: !0, showLoading: !1 });
-          })));
-  }
-  function adinplay_disableInput() {
-    game.input.enabled = !1;
-  }
-  function adinplay_enableInput() {
     game.input.enabled = !0;
-  }
-  function adinplay_pauseMusic() {
-    game.sound.volume = 0;
-  }
-  function adinplay_resumeMusic() {
-    game.sound.volume = 1;
+    adinplay_onAdStarted();
   }
   function getJsonFromUrl() {
     for (
@@ -115454,9 +115314,6 @@
       });
     }
     _create() {
-      "undefined" !== typeof gdsdk &&
-        "undefined" !== gdsdk.showAd &&
-        gdsdk.showAd();
       this.setCurrLangAfterLoad();
       this.scene.start(onboardingDone ? "Menu" : "Onboarding");
     }
@@ -116155,9 +116012,6 @@
       }
     }
     startGameCallback() {
-      "undefined" !== typeof gdsdk &&
-        "undefined" !== gdsdk.showAd &&
-        gdsdk.showAd();
       if (adventureMode) {
         if (availableLevels[level].scoreLevel) {
           this.mode_score.visible = !0;
@@ -117820,10 +117674,7 @@
         this.arrow_left,
         function () {
           animatingClick ||
-            ("undefined" !== typeof gdsdk &&
-              "undefined" !== gdsdk.showAd &&
-              gdsdk.showAd(),
-            soundManager.playSound(this, "button_click"),
+            (soundManager.playSound(this, "button_click"),
             buttonClick(this.arrow_left, 100),
             --currLang,
             0 > currLang && (currLang = 6),
@@ -117836,10 +117687,7 @@
         this.arrow_right,
         function () {
           animatingClick ||
-            ("undefined" !== typeof gdsdk &&
-              "undefined" !== gdsdk.showAd &&
-              gdsdk.showAd(),
-            soundManager.playSound(this, "button_click"),
+            (soundManager.playSound(this, "button_click"),
             buttonClick(this.arrow_right, 100),
             (currLang += 1),
             6 < currLang && (currLang = 0),
@@ -118179,10 +118027,7 @@
         function () {
           animatingContainer ||
             (soundManager.playSound(this, "button_click"),
-            this.continueGame(),
-            "undefined" !== typeof gdsdk &&
-              "undefined" !== gdsdk.showAd &&
-              gdsdk.showAd());
+            this.continueGame());
         }.bind(this)
       );
       AddButtonEvents(
@@ -118193,10 +118038,7 @@
             soundManager.playSound(this, "button_click"),
             this.scene.stop("Game"),
             this.scene.stop("SceneGameOver"),
-            this.scene.launch("Menu"),
-            "undefined" !== typeof gdsdk &&
-              "undefined" !== gdsdk.showAd &&
-              gdsdk.showAd());
+            this.scene.launch("Menu"));
         }.bind(this)
       );
       RewardAds.active
@@ -118434,9 +118276,6 @@
           this.scene.stop("Game");
           this.scene.stop("GameOverAdventure");
           this.scene.launch("Menu");
-          "undefined" !== typeof gdsdk &&
-            "undefined" !== gdsdk.showAd &&
-            gdsdk.showAd();
         }.bind(this)
       );
       AddButtonEvents(
@@ -118444,9 +118283,6 @@
         function () {
           soundManager.playSound(this, "button_click");
           this.continueGame();
-          "undefined" !== typeof gdsdk &&
-            "undefined" !== gdsdk.showAd &&
-            gdsdk.showAd();
         }.bind(this)
       );
       AddButtonEvents(
@@ -118458,9 +118294,6 @@
               this.scene.stop("GameOverAdventure"),
               this.scene.launch("Menu"))
             : this.continueGame();
-          "undefined" !== typeof gdsdk &&
-            "undefined" !== gdsdk.showAd &&
-            gdsdk.showAd();
         }.bind(this)
       );
       RewardAds.active
@@ -120108,8 +119941,9 @@
       : !1;
   }
   function onGameResume() {
-    yandexADPlaying ||
-      ((game.sound.volume = 1), game.sound.unlock(), (game.sound.mute = !1));
+    game.sound.volume = 1;
+    game.sound.unlock();
+    game.sound.mute = !1;
     try {
       game.scene.keys.Menu.full_sreen_btn.changeFullscreenIcon();
     } catch (a) {}
@@ -120174,70 +120008,13 @@
   function addEvent(a, b, f, h) {
     a.time.addEvent({ delay: b, callback: f, loop: (h && h.loop) || !1 });
   }
-  var yandexADPlaying = !1;
-  window.GD_OPTIONS = {
-    gameId: "5da372e4a178438a8f69f141b5edc68a",
-    onEvent: function (a) {
-      switch (a.name) {
-        case "SDK_GAME_START":
-          null != game && (game.sound.mute = !1);
-          break;
-        case "SDK_GAME_PAUSE":
-          null != game && (game.sound.mute = !0);
-          break;
-        case "SDK_REWARDED_WATCH_COMPLETE":
-          null != game && ((game.sound.mute = !1), (game.sound.volume = 1)),
-            !1 !== gdist_ad_clbck &&
-              (gdist_ad_clbck[0].call(gdist_ad_clbck[1]),
-              (gdist_ad_clbck = !1));
-      }
-    },
-  };
-  
-var gamedist_rewAdAvailable = false;
-
-function gamedist_preloadRewAd() {
-  gamedist_rewAdAvailable = !!(
-    window.BlockBlastH5Ads && window.BlockBlastH5Ads.showRewardedAd
-  );
-}
-
-var gdist_ad_clbck = false;
-
-function gamedist_showRewAd(onSuccess, onFailure, context) {
-  var failReward = function () {
-    adinplay_resumeMusic();
-    adinplay_enableInput();
+  // Reward buttons stay hidden while no in-game reward provider is configured.
+  function gamedist_preloadRewAd() {}
+  function gamedist_showRewAd(onSuccess, onFailure, context) {
+    game.sound.volume = 1;
+    game.input.enabled = !0;
     if (typeof onFailure === "function") {
       onFailure.call(context);
     }
-  };
-  if (!window.BlockBlastH5Ads || !window.BlockBlastH5Ads.showRewardedAd) {
-    failReward();
-    return;
-  }
-  window.BlockBlastH5Ads.showRewardedAd({
-    name: "revive_reward",
-    context: context,
-    beforeAd: function () {
-      adinplay_disableInput();
-      adinplay_pauseMusic();
-    },
-    afterAd: function () {
-      adinplay_resumeMusic();
-      adinplay_enableInput();
-    },
-    onReward: function () {
-      if (typeof onSuccess === "function") {
-        onSuccess.call(context);
-      }
-    },
-    onDismissed: function () {
-      failReward();
-    },
-    onUnavailable: function () {
-      failReward();
-    },
-  });
   }
 })();

@@ -16,6 +16,3 @@ google.com, pub-9508156287817487, RESELLER, f08c47fec0942fa0
 improvedigital.com, 2483, RESELLER
 sonobi.com, c2988be809, RESELLER, d1a215d9eb5aee9e
 media.net, 8CUM5Z5B0, DIRECT
-
-# Existing site AdSense account
-google.com, pub-1032974487169355, DIRECT, f08c47fec0942fa0

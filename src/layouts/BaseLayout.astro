@@ -1,6 +1,7 @@
 ---
 import "@/styles/global.css";
 import EzoicHead from "@/components/EzoicHead.astro";
+import EzoicPlacements from "@/components/EzoicPlacements.astro";
 import GoogleTags from "@/components/GoogleTags.astro";
 import { siteConfig } from "@/data/siteConfig";
 import { siteRoutes } from "@/data/siteRoutes";
@@ -225,5 +226,6 @@ const routeHref = (path: string) => withTrailingSlash(path);
         });
       })();
     </script>
+    <EzoicPlacements />
   </body>
 </html>
