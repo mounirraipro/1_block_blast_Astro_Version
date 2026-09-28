@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css";
+import EzoicHead from "@/components/EzoicHead.astro";
 import GoogleTags from "@/components/GoogleTags.astro";
 import { siteConfig } from "@/data/siteConfig";
 import { siteRoutes } from "@/data/siteRoutes";
@@ -52,6 +53,7 @@ const routeHref = (path: string) => withTrailingSlash(path);
 <html lang={siteConfig.language}>
   <head>
     <meta charset="UTF-8" />
+    <EzoicHead />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <GoogleTags placement="head" usePartytown={false} />
     <title>{pageTitle}</title>

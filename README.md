@@ -50,3 +50,24 @@ La redirection du `Caddyfile` reste utilisable pour les deploiements avec Caddy.
 
 Apres deploiement, ouvrir `https://blockblast.fr/ads.txt` et verifier la presence
 de l'entree `ezoic.ai`, puis relancer la verification dans Ezoic.
+
+## Ezoic : scripts de connexion
+
+`src/components/EzoicHead.astro` ajoute les deux scripts de consentement
+Gatekeeper, le chargeur publicitaire Ezoic, sa file de commandes et le script
+Ezoic Analytics. `BaseLayout.astro` les inclut juste apres la declaration du
+charset, avant Google Tag Manager. Les scripts de consentement sont synchrones
+et conservent `data-cfasync="false"` avant `src`.
+
+Cette etape installe les scripts dans les pages Astro utilisant `BaseLayout`.
+Les emplacements publicitaires seront ajoutes separement. La page
+`https://blockblast.fr/privacy-policy/` contient le point d'insertion
+`ezoic-privacy-policy-embed` fourni par Ezoic et un lien direct vers sa politique
+generee. Enregistrer cette URL exacte dans les parametres de confidentialite
+Ezoic pour activer l'injection de la politique propre au site.
+
+Dokploy avec Nixpacks et `dist` utilise Nginx : les fichiers `Caddyfile` et
+`public/_headers` ne configurent pas ses en-tetes. La reponse de production ne
+contenait pas de Content-Security-Policy lors de cette integration. Si une CSP
+est activee ensuite (Cloudflare, Nginx ou Caddy), autoriser les ressources Ezoic
+et Gatekeeper avant de la deployer.
