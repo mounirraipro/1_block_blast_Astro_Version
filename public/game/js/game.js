@@ -114218,19 +114218,32 @@
   }
   var ads_time = 0;
   function adinplay_playVideoAd() {
-    ADS_ENABLED
-      ? "undefined" === typeof aiptag
-        ? (adinplay_init(), adinplay_enableInput(), adinplay_onAdStarted())
-        : "undefined" === typeof adplayer
-        ? (adinplay_init(), adinplay_enableInput(), adinplay_onAdStarted())
-        : Date.now() - ads_time < ADS_DELAY
-        ? (adinplay_enableInput(), adinplay_onAdStarted())
-        : ((ads_time = Date.now()),
-          adinplay_disableInput(),
-          adinplay_pauseMusic(),
-          aiptag.cmd.player.push(function () {
-            adplayer.startPreRoll();
-          }))
+    if (!ADS_ENABLED || Date.now() - ads_time < ADS_DELAY) {
+      adinplay_enableInput();
+      adinplay_onAdStarted();
+      return;
+    }
+    ads_time = Date.now();
+    window.BlockBlastH5Ads && window.BlockBlastH5Ads.showInterstitial
+      ? window.BlockBlastH5Ads.showInterstitial({
+          type: "start",
+          name: "game_start",
+          beforeAd: function () {
+            adinplay_disableInput();
+            adinplay_pauseMusic();
+          },
+          afterAd: function () {
+            adinplay_resumeMusic();
+            adinplay_enableInput();
+          },
+          onDone: function () {
+            adinplay_enableInput();
+            adinplay_onAdStarted();
+            !0 === ADS_TIME_DEC_ENABLED &&
+              ADS_DELAY > ADS_MINTIME &&
+              (ADS_DELAY -= ADS_DEC);
+          },
+        })
       : (adinplay_enableInput(), adinplay_onAdStarted());
   }
   var adinplay_rew_callbacks = [];
@@ -120023,24 +120036,24 @@
     game.scene.add("TestAD", TestAD);
     game.scene.add("RotateScreen", RotateScreen);
     game.scene.add("Boot", Boot, !0);
-    this.game.events.addListener(
+    game.events.addListener(
       Phaser.Core.Events.FOCUS,
-      this.onGameResume,
+      onGameResume,
       this
     );
-    this.game.events.addListener(
+    game.events.addListener(
       Phaser.Core.Events.VISIBLE,
-      this.onGameResume,
+      onGameResume,
       this
     );
-    this.game.events.addListener(
+    game.events.addListener(
       Phaser.Core.Events.HIDDEN,
-      this.onGamePause,
+      onGamePause,
       this
     );
-    this.game.events.addListener(
+    game.events.addListener(
       Phaser.Core.Events.BLUR,
-      this.onGamePause,
+      onGamePause,
       this
     );
     document.documentElement.style.overflow = "hidden";
@@ -120184,17 +120197,47 @@
 var gamedist_rewAdAvailable = false;
 
 function gamedist_preloadRewAd() {
-  gamedist_rewAdAvailable = false;
+  gamedist_rewAdAvailable = !!(
+    window.BlockBlastH5Ads && window.BlockBlastH5Ads.showRewardedAd
+  );
 }
 
 var gdist_ad_clbck = false;
 
 function gamedist_showRewAd(onSuccess, onFailure, context) {
-  // You can trigger the success callback immediately if you want to simulate an ad
-  // or use onFailure.call(context) to simulate ad failure
-  console.log("Ad system disabled. Simulating ad success...");
-  if (typeof onSuccess === "function") {
-    onSuccess.call(context);
+  var failReward = function () {
+    adinplay_resumeMusic();
+    adinplay_enableInput();
+    if (typeof onFailure === "function") {
+      onFailure.call(context);
+    }
+  };
+  if (!window.BlockBlastH5Ads || !window.BlockBlastH5Ads.showRewardedAd) {
+    failReward();
+    return;
   }
+  window.BlockBlastH5Ads.showRewardedAd({
+    name: "revive_reward",
+    context: context,
+    beforeAd: function () {
+      adinplay_disableInput();
+      adinplay_pauseMusic();
+    },
+    afterAd: function () {
+      adinplay_resumeMusic();
+      adinplay_enableInput();
+    },
+    onReward: function () {
+      if (typeof onSuccess === "function") {
+        onSuccess.call(context);
+      }
+    },
+    onDismissed: function () {
+      failReward();
+    },
+    onUnavailable: function () {
+      failReward();
+    },
+  });
   }
 })();
