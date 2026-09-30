@@ -1,6 +1,6 @@
 ---
+import AdsterraBanner from "@/components/AdsterraBanner.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import EzoicAd from "@/components/EzoicAd.astro";
 import ContactEmail from "@/components/ContactEmail.astro";
 import { pageContent, type ContentSection, type ContentPage as PageContent, type PageKey } from "@/data/pageContent";
 import { siteConfig } from "@/data/siteConfig";
@@ -11,8 +11,7 @@ type Props = {
 
 const { pageKey } = Astro.props;
 const page = pageContent[pageKey] as PageContent;
-const showContentAd = ["how-to-play", "strategy", "difficulty-guide", "game-mechanics"].includes(pageKey);
-const adAfterSection = Math.ceil(page.sections.length / 2) - 1;
+const showGuideAd = ["how-to-play", "strategy", "difficulty-guide", "game-mechanics"].includes(pageKey);
 const slugify = (value: string) =>
   value
     .toLowerCase()
@@ -85,26 +84,21 @@ const splitContactEmail = (value: string) =>
         {page.updated && <p>{page.intro}</p>}
         {
           page.sections.map((section: ContentSection, index: number) => (
-            <>
-              <section id={slugify(section.heading)}>
-                {index === 0 ? <h2>{section.heading}</h2> : <h3>{section.heading}</h3>}
-                {section.body && (
-                  <p>
-                    {splitContactEmail(section.body).map((part) => (part === CONTACT_EMAIL_TOKEN ? <ContactEmail /> : part))}
-                  </p>
-                )}
-                {section.items && (
-                  <ul>
-                    {section.items.map((item: string) => (
-                      <li>{splitContactEmail(item).map((part) => (part === CONTACT_EMAIL_TOKEN ? <ContactEmail /> : part))}</li>
-                    ))}
-                  </ul>
-                )}
-              </section>
-              {showContentAd && index === adAfterSection && index < page.sections.length - 1 && (
-                <EzoicAd placement={`${pageKey}-mid-content`} />
+            <section id={slugify(section.heading)}>
+              {index === 0 ? <h2>{section.heading}</h2> : <h3>{section.heading}</h3>}
+              {section.body && (
+                <p>
+                  {splitContactEmail(section.body).map((part) => (part === CONTACT_EMAIL_TOKEN ? <ContactEmail /> : part))}
+                </p>
               )}
-            </>
+              {section.items && (
+                <ul>
+                  {section.items.map((item: string) => (
+                    <li>{splitContactEmail(item).map((part) => (part === CONTACT_EMAIL_TOKEN ? <ContactEmail /> : part))}</li>
+                  ))}
+                </ul>
+              )}
+            </section>
           ))
         }
         <slot />
@@ -125,6 +119,7 @@ const splitContactEmail = (value: string) =>
             Consultez la <a href="/faq/">FAQ</a> ou la page <a href="/contact/">contact</a>.
           </p>
         </div>
+        {showGuideAd && <AdsterraBanner format="skyscraper" />}
       </aside>
     </div>
   </article>

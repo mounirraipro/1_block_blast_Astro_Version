@@ -1,0 +1,18 @@
+---
+import AdsterraBanner from "./AdsterraBanner.astro";
+---
+<aside class="adsterra-block" aria-label="Publicités">
+  <AdsterraBanner />
+  <div class="adsterra-smartlink">
+    <span>Publicité · Adsterra</span>
+    <a href="https://www.profitableratecpmnetwork.com/ep5m3gfi22?key=1e01a1597f957a126d4c93baf2f7e322" target="_blank" rel="sponsored nofollow noopener noreferrer" data-adsterra-smartlink>Voir une offre publicitaire <small>(nouvel onglet)</small></a>
+  </div>
+</aside>
+<style>
+  .adsterra-block { width: min(1120px, calc(100% - 48px)); margin: 3rem auto; clear: both; }
+  .adsterra-smartlink { padding: 1.1rem 1.3rem; border: 1px solid #dbe3ed; border-radius: 8px; background: #f8fafc; text-align: center; }
+  .adsterra-smartlink span { display: block; margin-bottom: 0.65rem; color: #64748b; font-size: 0.75rem; }
+  .adsterra-smartlink a { display: inline-block; color: #334155; text-decoration: underline; text-underline-offset: 3px; line-height: 1.6; }
+  .adsterra-smartlink small { white-space: nowrap; }
+  @media (max-width: 600px) { .adsterra-block { width: calc(100% - 28px); } }
+</style>

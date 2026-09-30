@@ -28,71 +28,35 @@ SITE_URL=https://blockblast.fr
 
 Le site est independant et ne se presente pas comme l'application officielle Block Blast ni comme son editeur.
 
-## Ezoic ads.txt et Dokploy
+## Build et deploiement
+
+Utiliser `npm run build` comme commande de build dans Dokploy. Elle genere le
+site statique avec Astro puis applique le nettoyage SEO de `scripts/cleanup-dist-seo.mjs`.
 
 Avec Nixpacks et `dist` comme Publish Directory, Dokploy sert les fichiers via
-Nginx et n'utilise pas le `Caddyfile` du projet.
+Nginx : les fichiers `Caddyfile` et `public/_headers` ne configurent pas ses en-tetes.
+Le `Caddyfile` reste utilisable pour les deploiements avec Caddy.
 
-`npm run build` recupere d'abord la liste geree par Ezoic depuis
-`https://srv.adstxtmanager.com/19390/blockblast.fr`, verifie son format et les
-entrees Ezoic, puis met a jour `public/ads.txt`. Astro copie ce fichier dans
-`dist/ads.txt`. Seule la liste geree par Ezoic est publiee ; l'ancien compte
-AdSense ajoute manuellement a ete retire avec les publicites Google du jeu.
+`public/ads.txt` ne contient actuellement que des commentaires et est copie
+dans `dist/ads.txt` pendant le build.
 
-Utiliser `npm run build` comme commande de build dans Dokploy. La commande
-`npm run ads:sync` permet aussi d'actualiser le fichier sans reconstruire le site.
-Si Ezoic est inaccessible ou renvoie une liste invalide, le build s'arrete sans
-remplacer le fichier existant.
+Le jeu local conserve Google H5 Ads et les anciens appels GameDistribution
+desactives. Les boutons de reanimation par publicite restent masques ; jouer
+et rejouer fonctionnent sans pause publicitaire.
 
-La liste est actualisee a chaque build, pas entre deux deploiements. Pour une
-actualisation quotidienne sans redeploiement, configurer une redirection HTTP
-301 de `/ads.txt` vers l'URL Ezoic dans le serveur actif ou dans Cloudflare.
-La redirection du `Caddyfile` reste utilisable pour les deploiements avec Caddy.
+## Publicites Adsterra
 
-Apres deploiement, ouvrir `https://blockblast.fr/ads.txt` et verifier la presence
-de l'entree `ezoic.ai`, puis relancer la verification dans Ezoic.
+- Les pages accueil, play, blog/articles et les quatre guides de jeu affichent un bloc publicitaire en fin de contenu : leaderboard 728x90 si la largeur disponible atteint 728px, puis Smartlink identifie comme publicite. Aucun bouton de jeu ni lien de navigation n'est detourne.
+- Les articles et les guides ajoutent un skyscraper 160x600 dans leur colonne laterale seulement a partir de 1200px de viewport et avec 160px disponibles. Les colonnes contenant cette unite ne sont pas sticky. Aucune banniere n'est reduite pour tenir sur mobile ; les petits ecrans conservent le Smartlink.
+- La Social Bar est chargee une seule fois sur blog/articles et guides, jamais sur accueil, play, jeux integres ou pages legales. Sa position et ses formats sont controles par Adsterra, pas par la position du script. Faire valider par le fournisseur des formats fermables sans recouvrement de navigation avant publication.
+- Les scripts Adsterra attendent une autorisation explicite via les choix publicitaires. La preference locale versionnee concerne uniquement Adsterra ; ce mecanisme ne pretend pas etre une CMP certifiee et ne modifie pas GoogleTags. Un retrait recharge la page si la Social Bar a ete chargee pour supprimer ses effets.
+- Chaque banniere recoit son propre document iframe sandboxe et son propre atOptions. Le sandbox bloque l'acces au DOM du jeu et la navigation de la page parente ; les clics publicitaires peuvent ouvrir un nouvel onglet. L'absence de allow-same-origin restreint cookies/stockage du cadre : compatibilite et attribution a confirmer aupres d'Adsterra. Les dimensions cachees ne declenchent pas de requete initiale.
+- Les politiques CSP locales autorisent les hotes fournis, sans autorisation globale de scripts HTTPS. Les domaines supplementaires utilises par les creations/requetes Adsterra restent a valider avec le fournisseur avant une diffusion reelle ; une CSP active peut les bloquer. Dokploy/Nginx doit appliquer sa propre configuration (aucun reglage externe modifie ici).
+- ads.txt reste compose de commentaires : aucun vendeur invente. Adsterra indique ne pas fournir de fichier obligatoire dans son guide d'integration HTML.
+- QA : substituer les scripts dans srcdoc avant execution et simuler le chargeur Social Bar, puis bloquer tout autre acces externe (l’interception reseau seule peut manquer la premiere requete d’une iframe sandboxee dans Chromium) ; ne pas ouvrir les annonces reelles ni generer d'impressions de test. La simulation valide le cablage, pas le remplissage, les revenus, le consentement fournisseur ou la compatibilite sandbox reelle.
 
-## Ezoic : scripts de connexion
+Documentation fournisseur :
+- https://help-publishers.adsterra.com/en/articles/5210780-adding-ads-to-a-static-html-site
+- https://help-publishers.adsterra.com/en/articles/9571958-displaying-different-banners-on-mobile-and-desktop
 
-`src/components/EzoicHead.astro` ajoute les deux scripts de consentement
-Gatekeeper, le chargeur publicitaire Ezoic, sa file de commandes et le script
-Ezoic Analytics. `BaseLayout.astro` les inclut juste apres la declaration du
-charset, avant Google Tag Manager. Les scripts de consentement sont synchrones
-et conservent `data-cfasync="false"` avant `src`.
-
-Les scripts sont installes dans les pages Astro utilisant `BaseLayout`. La page
-`https://blockblast.fr/privacy-policy/` contient le point d'insertion
-`ezoic-privacy-policy-embed` fourni par Ezoic et un lien direct vers sa politique
-generee. Enregistrer cette URL exacte dans les parametres de confidentialite
-Ezoic pour activer l'injection de la politique propre au site.
-
-Dokploy avec Nixpacks et `dist` utilise Nginx : les fichiers `Caddyfile` et
-`public/_headers` ne configurent pas ses en-tetes. La reponse de production ne
-contenait pas de Content-Security-Policy lors de cette integration. Si une CSP
-est activee ensuite (Cloudflare, Nginx ou Caddy), autoriser les ressources Ezoic
-et Gatekeeper avant de la deployer.
-
-## Ezoic : emplacements publicitaires
-
-`EzoicAd.astro` ajoute un emplacement sous le jeu sur `/` et `/play/`, au milieu
-de chaque article du blog, et entre les sections de `/how-to-play/`,
-`/strategy/`, `/difficulty-guide/` et `/game-mechanics/`. Les pages legales,
-de contact et les iframes de jeux tiers ne recoivent pas d'emplacement.
-
-`EzoicPlacements.astro` utilise l'API documentee `showAds` avec un selecteur CSS,
-une seule fois par page apres le contenu. Aucun identifiant de placement du
-dashboard n'est necessaire. Les formats autorises sont filtres selon la largeur
-reelle de la colonne (250x250, 300x250, 336x280, et 728x90 sous le jeu).
-`required: false` laisse Ezoic appliquer sa limite de densite publicitaire.
-Les emplacements vides n'ont pas de hauteur minimale reservee.
-
-Les formats flottants, video, interstitiels et ancrages sont desactives avant
-la demande d'annonces pour laisser les commandes de jeu accessibles. Le jeu
-local ne charge plus Google H5 Ads ni les anciens appels GameDistribution.
-Les boutons de reanimation par publicite sont masques ; jouer et rejouer
-fonctionnent sans pause publicitaire.
-
-Apres redeploiement, tester `https://blockblast.fr/?ez_js_debugger=1` sans
-bloqueur de publicite et verifier les demandes d'annonces dans l'outil Ezoic.
-Verifier aussi une page de guide et `/play/` sur mobile. La diffusion reelle
-depend de l'approbation du site, du consentement et des annonces disponibles.
+Limite CSP preexistante : img-src ne contient pas blob:. Lorsque ces en-tetes sont appliques, certaines images du jeu local (rotate_screen, inllogo) sont bloquees. Aucun elargissement de cette directive n’a ete applique dans cette integration.

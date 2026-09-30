@@ -1,6 +1,6 @@
 ---
+import AdsterraBanner from "@/components/AdsterraBanner.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import EzoicAd from "@/components/EzoicAd.astro";
 import { articles, type Article } from "@/data/articles";
 import { siteConfig } from "@/data/siteConfig";
 
@@ -27,9 +27,6 @@ const articleMetaDescription = shortenMeta(article.description, 152);
 const articleHeadingOverrides: Record<string, string> = {};
 const articleHeading = articleHeadingOverrides[article.slug] ?? article.title;
 const articleBodyHtml = article.html.replace(/<h2(\s[^>]*)?>/gi, "<h3$1>").replace(/<\/h2>/gi, "</h3>");
-// Article data uses top-level headings, so ads stay between complete sections.
-const articleSections = articleBodyHtml.split(/(?=<h3(?:\s|>))/i);
-const adAfterSection = Math.ceil((articleSections.length - 1) / 2);
 const [contactLocal, contactDomain] = siteConfig.contactEmail.split("@");
 const feedbackSubject = `Commentaire sur: ${article.title}`;
 const articleStructuredData = [
@@ -86,16 +83,7 @@ const articleStructuredData = [
             Ce guide donne d'abord la reponse utile, puis des conseils pratiques a tester pendant une partie. Gardez une grille lisible, essayez une astuce a la fois et revenez quand vous voulez progresser dans les puzzles de blocs.
           </p>
         </section>
-        <div class="article-content">
-          {articleSections.map((html, index) => (
-            <>
-              <Fragment set:html={html} />
-              {index === adAfterSection && index < articleSections.length - 1 && (
-                <EzoicAd placement="blog-mid-content" />
-              )}
-            </>
-          ))}
-        </div>
+        <div class="article-content" set:html={articleBodyHtml}></div>
 
         <section class="article-tags-box" aria-label="Article tags">
           <span class="article-tags-label">Categorie:</span>
@@ -170,6 +158,7 @@ const articleStructuredData = [
           </dl>
           <a class="article-side-link" href="/play/">Jouer a Block Blast</a>
         </div>
+        <AdsterraBanner format="skyscraper" />
       </aside>
     </div>
   </article>

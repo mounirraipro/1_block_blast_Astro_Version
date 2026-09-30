@@ -1,0 +1,27 @@
+---
+type Props = { format?: "leaderboard" | "skyscraper" };
+const { format = "leaderboard" } = Astro.props;
+const unit = format === "leaderboard"
+  ? { key: "0fe0be46f2556cae7a00611434c290ba", width: 728, height: 90 }
+  : { key: "b3835aaa2a375ba813849deb163c0827", width: 160, height: 600 };
+---
+<div class:list={["adsterra-slot", format]}>
+  <section class="adsterra-banner" aria-label="Publicité Adsterra" data-adsterra-banner data-key={unit.key} data-width={unit.width} data-height={unit.height}>
+    <p class="adsterra-label">Publicité</p>
+    <div class="adsterra-creative" data-adsterra-creative></div>
+    <a class="adsterra-choice-link" href="#advertising-preferences">Choix publicitaires</a>
+  </section>
+</div>
+<style>
+  .adsterra-slot { container-type: inline-size; width: 100%; min-width: 0; margin: 2rem auto; }
+  .adsterra-banner { display: none; width: fit-content; max-width: 100%; margin: 0 auto; text-align: center; }
+  .leaderboard .adsterra-banner { width: 728px; }
+  .skyscraper .adsterra-banner { width: 160px; }
+  .adsterra-label { margin: 0 0 0.5rem; font: 600 0.72rem/1.4 sans-serif; letter-spacing: 0.09em; text-transform: uppercase; color: #64748b; }
+  .adsterra-choice-link { display: inline-block; margin-top: 0.5rem; font: 0.75rem/1.5 sans-serif; color: #475569; text-decoration: underline; }
+  .adsterra-creative { background: #f8fafc; }
+  .adsterra-creative :global(iframe) { display: block; border: 0; max-width: none; }
+  @container (min-width: 728px) { .leaderboard .adsterra-banner { display: block; } }
+  @media (min-width: 1200px) { @container (min-width: 160px) { .skyscraper .adsterra-banner { display: block; } } }
+  :global(.content-page-aside:has([data-adsterra-banner])), :global(.blog-article-aside:has([data-adsterra-banner])) { position: static; }
+</style>

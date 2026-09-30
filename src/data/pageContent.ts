@@ -140,7 +140,7 @@ export const pageContent = {
       },
       {
         heading: "Vos choix",
-        body: "Vous pouvez bloquer ou supprimer les cookies depuis les reglages de votre navigateur. Certaines fonctions peuvent alors etre moins fluides.",
+        body: "Les choix publicitaires en bas de page permettent d’autoriser ou de refuser les scripts Adsterra. Cette preference est conservee dans le stockage local du navigateur. Vous pouvez aussi effacer les cookies et les donnees du site dans les reglages de votre navigateur. Ce choix ne modifie pas les reglages des outils Google ni des jeux tiers.",
       },
     ],
   },
