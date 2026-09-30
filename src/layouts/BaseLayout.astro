@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css";
+import AdsterraBanner from "@/components/AdsterraBanner.astro";
 import AdsterraBlock from "@/components/AdsterraBlock.astro";
 import AdsterraPreferences from "@/components/AdsterraPreferences.astro";
 import GoogleTags from "@/components/GoogleTags.astro";
@@ -8,18 +9,18 @@ import { siteRoutes } from "@/data/siteRoutes";
 import { buildJsonLd, buildPageTitle, getCanonicalUrl, getSeoForPath, withTrailingSlash, type SeoPage } from "@/data/seo";
 
 type Props = {
+  adRail?: boolean;
   title?: string;
   description?: string;
   seo?: Partial<SeoPage>;
   structuredData?: unknown[];
 };
 
-const { title, description, seo = {}, structuredData = [] } = Astro.props;
+const { title, description, seo = {}, structuredData = [], adRail = true } = Astro.props;
 
 const pathname = Astro.url.pathname;
 const adPath = pathname.replace(/\/$/, "") || "/";
-const editorialAds = adPath === "/blog" || adPath.startsWith("/blog/") || ["/how-to-play", "/strategy", "/difficulty-guide", "/game-mechanics"].includes(adPath);
-const showAds = editorialAds || ["/", "/play"].includes(adPath);
+const gameplayPage = adPath === "/" || adPath === "/play" || (adPath.startsWith("/games/") && !["/games/beginner-puzzles", "/games/expert-puzzles"].includes(adPath));
 const routeSeo = getSeoForPath(pathname);
 const pageSeo = {
   ...routeSeo,
@@ -141,11 +142,14 @@ const routeHref = (path: string) => withTrailingSlash(path);
     </header>
 
     <main id="main-content" class="min-h-[72vh]">
-      <slot />
-      {showAds && <AdsterraBlock />}
+      <div class="site-leaderboard"><AdsterraBanner /></div>
+      <div class:list={["site-ad-layout", { "with-ad-rail": adRail }]}><div class="site-page-content"><slot /></div>
+        {adRail && <aside class="site-ad-rail" aria-label="Publicité"><AdsterraBanner format="skyscraper" /></aside>}
+      </div>
+      <AdsterraBlock />
     </main>
 
-    <AdsterraPreferences socialBar={editorialAds} />
+    <AdsterraPreferences socialBar={!gameplayPage} />
     <footer class="border-t border-line-strong bg-gradient-to-b from-[#f8fbff] to-white">
       <div class="mx-auto grid w-[min(1120px,calc(100%-48px))] grid-cols-[minmax(240px,1.3fr)_repeat(4,minmax(120px,0.72fr))_minmax(220px,1fr)] gap-8 py-8 max-lg:grid-cols-3 max-sm:w-[calc(100%-28px)] max-sm:grid-cols-2">
         <div class="max-sm:col-span-2">
@@ -232,3 +236,13 @@ const routeHref = (path: string) => withTrailingSlash(path);
     </script>
   </body>
 </html>
+
+<style>
+  .site-leaderboard { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+  .site-page-content { min-width: 0; }
+  .site-ad-rail { display: none; }
+  @media (min-width: 1600px) {
+    .with-ad-rail { display: grid; grid-template-columns: minmax(0, 1fr) 160px; gap: 32px; width: min(1680px, calc(100% - 48px)); margin: 0 auto; align-items: start; }
+    .site-ad-rail { display: block; padding-top: 2rem; }
+  }
+</style>

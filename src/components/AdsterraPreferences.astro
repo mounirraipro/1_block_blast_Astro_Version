@@ -2,8 +2,8 @@
 type Props = { socialBar?: boolean };
 const { socialBar = false } = Astro.props;
 ---
-<section id="advertising-preferences" class="advertising-preferences" aria-label="Choix publicitaires" data-adsterra-preferences data-social-bar={socialBar ? "true" : "false"}>
-  <h2>Choix publicitaires</h2>
+<details id="advertising-preferences" class="advertising-preferences" aria-label="Choix publicitaires" data-adsterra-preferences data-social-bar={socialBar ? "true" : "false"}>
+  <summary>Choix publicitaires</summary>
   <p>Autoriser les publicités Adsterra et leurs technologies de suivi ? Votre choix est enregistré sur cet appareil. Vous pouvez le modifier ici à tout moment.</p>
   <div class="advertising-actions">
     <button type="button" data-adsterra-allow>Autoriser</button>
@@ -12,14 +12,14 @@ const { socialBar = false } = Astro.props;
   </div>
   <p role="status" data-adsterra-status>Les scripts publicitaires Adsterra sont désactivés tant que vous ne les autorisez pas.</p>
   <noscript>JavaScript est désactivé : les scripts publicitaires ne sont pas chargés.</noscript>
-</section>
+</details>
 <script>
   import { initializeAdsterra } from "../scripts/adsterra";
   initializeAdsterra();
 </script>
 <style>
-  .advertising-preferences { width: min(1120px, calc(100% - 48px)); margin: 2rem auto; padding: 1.25rem; border: 1px solid #dbe3ed; border-radius: 8px; scroll-margin-top: 7rem; }
-  .advertising-preferences h2 { font-size: 1rem; margin: 0 0 0.65rem; }
+  .advertising-preferences { width: min(1120px, calc(100% - 48px)); margin: 0.75rem auto; padding: 0.75rem 0; border-top: 1px solid #e2e8f0; scroll-margin-top: 7rem; }
+  .advertising-preferences summary { cursor: pointer; font-size: 0.8rem; color: #64748b; }
   .advertising-preferences p { font-size: 0.85rem; line-height: 1.6; margin: 0.65rem 0; }
   .advertising-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
   .advertising-actions button { padding: 0.6rem 1rem; border: 1px solid #94a3b8; border-radius: 5px; color: #334155; background: #fff; cursor: pointer; }

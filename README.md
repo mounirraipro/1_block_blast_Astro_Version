@@ -44,19 +44,22 @@ Le jeu local conserve Google H5 Ads et les anciens appels GameDistribution
 desactives. Les boutons de reanimation par publicite restent masques ; jouer
 et rejouer fonctionnent sans pause publicitaire.
 
-## Publicites Adsterra
+## Publicites Adsterra — desktop
 
-- Les pages accueil, play, blog/articles et les quatre guides de jeu affichent un bloc publicitaire en fin de contenu : leaderboard 728x90 si la largeur disponible atteint 728px, puis Smartlink identifie comme publicite. Aucun bouton de jeu ni lien de navigation n'est detourne.
-- Les articles et les guides ajoutent un skyscraper 160x600 dans leur colonne laterale seulement a partir de 1200px de viewport et avec 160px disponibles. Les colonnes contenant cette unite ne sont pas sticky. Aucune banniere n'est reduite pour tenir sur mobile ; les petits ecrans conservent le Smartlink.
-- La Social Bar est chargee une seule fois sur blog/articles et guides, jamais sur accueil, play, jeux integres ou pages legales. Sa position et ses formats sont controles par Adsterra, pas par la position du script. Faire valider par le fournisseur des formats fermables sans recouvrement de navigation avant publication.
-- Les scripts Adsterra attendent une autorisation explicite via les choix publicitaires. La preference locale versionnee concerne uniquement Adsterra ; ce mecanisme ne pretend pas etre une CMP certifiee et ne modifie pas GoogleTags. Un retrait recharge la page si la Social Bar a ete chargee pour supprimer ses effets.
-- Chaque banniere recoit son propre document iframe sandboxe et son propre atOptions. Le sandbox bloque l'acces au DOM du jeu et la navigation de la page parente ; les clics publicitaires peuvent ouvrir un nouvel onglet. L'absence de allow-same-origin restreint cookies/stockage du cadre : compatibilite et attribution a confirmer aupres d'Adsterra. Les dimensions cachees ne declenchent pas de requete initiale.
-- Les politiques CSP locales autorisent les hotes fournis, sans autorisation globale de scripts HTTPS. Les domaines supplementaires utilises par les creations/requetes Adsterra restent a valider avec le fournisseur avant une diffusion reelle ; une CSP active peut les bloquer. Dokploy/Nginx doit appliquer sa propre configuration (aucun reglage externe modifie ici).
-- ads.txt reste compose de commentaires : aucun vendeur invente. Adsterra indique ne pas fournir de fichier obligatoire dans son guide d'integration HTML.
-- QA : substituer les scripts dans srcdoc avant execution et simuler le chargeur Social Bar, puis bloquer tout autre acces externe (l’interception reseau seule peut manquer la premiere requete d’une iframe sandboxee dans Chromium) ; ne pas ouvrir les annonces reelles ni generer d'impressions de test. La simulation valide le cablage, pas le remplissage, les revenus, le consentement fournisseur ou la compatibilite sandbox reelle.
+Toutes les pages Astro (accueil, jeu, articles, index, categories et pages legales) utilisent une banniere 728x90 en haut, hors des commandes, a partir de 1024px de viewport et uniquement avec 728px disponibles. Les articles et pages de contenu utilisent leur colonne native pour le 160x600 a partir de 1200px. Les autres pages utilisent une colonne dediee sur les grands ecrans (1600px minimum). Une seule occurrence de chaque unite par document. Le lien sponsorise est une simple ligne en pied de contenu, sans carte ni faux bouton de jeu.
 
-Documentation fournisseur :
+Aucun format desktop n'est charge ou redimensionne sur mobile. Aucun nouveau code mobile n'a ete invente. Il n'y a pas de faux visuel, de texte de demonstration ou de mode preview dans le code livre. Les emplacements non demandes restent invisibles. Les creations reelles viennent uniquement du fournisseur.
+
+Les choix publicitaires sont un panneau repliable : ouvert pour un premier choix sur desktop, compact apres decision. L'autorisation existante est conservee et declenche automatiquement les formats disponibles, sans bouton par emplacement. Le retrait recharge le document si la Social Bar a deja ete chargee. GoogleTags est conserve et n'est pas pilote par ce choix Adsterra.
+
+La Social Bar est active sur toutes les pages desktop sans iframe de jeu, y compris les index et pages legales. Elle reste exclue de l'accueil, de /play/ et des pages de jeux embarques : le fournisseur controle ses superpositions et aucune API documentee ne garantit de liberer les commandes de jeu. Les bannieres et Smartlink couvrent aussi ces pages. Pour activer la Social Bar pendant le jeu, faire valider un format non superpose par Adsterra ; aucun parametre de compte n'a ete modifie.
+
+Les deux bannieres utilisent chacune un document srcdoc same-origin avec le snippet atOptions puis invoke.js synchrone. Le sandbox a origine opaque a ete retire pour permettre au fournisseur ses acces usuels au stockage et au document. Les options ne se melangent pas entre unites ; ce choix fait confiance au fournisseur comme tout script publicitaire tiers. Le guide officiel recommande les scripts dans le body et n'atteste pas notre wrapper : compatibilite finale, approbation du site et remplissage restent a confirmer avec le fournisseur.
+
+CSP : seuls les hotes fournis sont autorises. Les domaines secondaires des creations et du fournisseur peuvent necessiter une liste officielle complementaire. Ne pas declarer la diffusion validee sans ce controle. Dokploy/Nginx applique sa propre configuration. Aucun elargissement img-src a blob: n'a ete applique : la limitation preexistante sur rotate_screen/inllogo du jeu reste en attente d'autorisation.
+
+QA : substituer les scripts avant execution, pas seulement intercepter les requetes des iframes ; aucune annonce a cliquer ni impression artificielle. Les mocks sont exclusivement dans les scripts de test hors du depot. ads.txt reste compose de commentaires, sans vendeur invente.
+
+References :
 - https://help-publishers.adsterra.com/en/articles/5210780-adding-ads-to-a-static-html-site
 - https://help-publishers.adsterra.com/en/articles/9571958-displaying-different-banners-on-mobile-and-desktop
-
-Limite CSP preexistante : img-src ne contient pas blob:. Lorsque ces en-tetes sont appliques, certaines images du jeu local (rotate_screen, inllogo) sont bloquees. Aucun elargissement de cette directive n’a ete applique dans cette integration.
