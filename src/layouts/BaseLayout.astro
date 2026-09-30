@@ -146,6 +146,7 @@ const routeHref = (path: string) => withTrailingSlash(path);
       <div class:list={["site-ad-layout", { "with-ad-rail": adRail }]}><div class="site-page-content"><slot /></div>
         {adRail && <aside class="site-ad-rail" aria-label="Publicité"><AdsterraBanner format="skyscraper" /></aside>}
       </div>
+      <div class="site-leaderboard site-leaderboard-bottom"><AdsterraBanner /></div>
       <AdsterraBlock />
     </main>
 

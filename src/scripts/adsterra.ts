@@ -19,6 +19,8 @@ export function initializeAdsterra() {
       ? "Publicités Adsterra autorisées. Vous pouvez retirer votre choix ici."
       : "Les scripts publicitaires Adsterra sont désactivés.";
   };
+  let bannerQueue: Promise<void> = Promise.resolve();
+  let bannerStarted = false;
   const loadSlot = (slot: HTMLElement) => {
     const width = Number(slot.dataset.width);
     const height = Number(slot.dataset.height);
@@ -28,17 +30,27 @@ export function initializeAdsterra() {
     if (!container || container.getBoundingClientRect().width < width || !container.getClientRects().length || (width === 160 && innerWidth < 1200)) return;
     slot.dataset.requested = "true";
     if (!slot.getClientRects().length || slot.getBoundingClientRect().width < width) { delete slot.dataset.requested; return; }
-    const frame = document.createElement("iframe");
-    frame.title = "Publicité Adsterra " + width + " × " + height;
-    frame.width = String(width);
-    frame.height = String(height);
-    // Same-origin documents isolate atOptions without an opaque sandbox origin that breaks provider storage.
-    // Provider scripts are trusted third-party code, as is the global Social Bar.
-    frame.referrerPolicy = "strict-origin-when-cross-origin";
-    const options = { key: slot.dataset.key, format: "iframe", height, width, params: {} };
-    frame.srcdoc = '<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;overflow:hidden}</style></head><body><script>window.atOptions=' + JSON.stringify(options) + ';<\/script><script src="https://www.highrevenueformat.com/' + slot.dataset.key + '/invoke.js"><\/script></body></html>';
     attempted.add(slot);
-    holder.replaceChildren(frame);
+    // The supplied tag runs directly in the page body. Only the provider creates
+    // its format:"iframe" creative; there is no publisher iframe around the tag.
+    // Do not overwrite atOptions until the preceding invoke.js has executed.
+    bannerQueue = bannerQueue.then(() => new Promise<void>(resolve => {
+      if (!allowed || !desktop.matches || !slot.isConnected || !slot.getClientRects().length || container.getBoundingClientRect().width < width || (width === 160 && innerWidth < 1200)) {
+        attempted.delete(slot); delete slot.dataset.requested; resolve(); return;
+      }
+      const script = document.createElement("script");
+      script.type = "text/javascript";
+      script.async = false;
+      script.src = "https://www.highrevenueformat.com/" + slot.dataset.key + "/invoke.js";
+      script.dataset.adsterraBannerScript = "true";
+      script.onload = () => resolve();
+      script.onerror = () => { delete slot.dataset.requested; resolve(); };
+      (window as Window & { atOptions?: object }).atOptions = {
+        key: slot.dataset.key, format: "iframe", height, width, params: {},
+      };
+      bannerStarted = true;
+      holder.append(script);
+    }));
   };
   const loadSocial = () => {
     if (!allowed || !desktop.matches || socialLoaded || preferences.dataset.socialBar !== "true") return;
@@ -57,8 +69,9 @@ export function initializeAdsterra() {
     try { localStorage.setItem(preferenceKey, value ? "allow" : "deny"); } catch { /* The choice still applies to this page. */ }
     if (!value) {
       slots.forEach(slot => { slot.querySelector("[data-adsterra-creative]")?.replaceChildren(); attempted.delete(slot); delete slot.dataset.requested; });
-      // Reload removes provider-created overlays, listeners and timers after withdrawal.
-      if (socialLoaded) { location.reload(); return; }
+      // Direct tags may install listeners and timers outside their slot.
+      // Reload also cancels any queued/in-flight unit after withdrawal.
+      if (socialLoaded || bannerStarted) { location.reload(); return; }
     }
     refresh();
   };
