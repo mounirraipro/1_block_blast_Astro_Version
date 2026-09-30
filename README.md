@@ -1,3 +1,9 @@
+## Adsterra suspendu — 30 septembre 2026
+
+`src/data/advertising.ts` contient `ADSTERRA_ENABLED = false` : aucun emplacement, Smartlink, panneau de consentement ni chargeur Adsterra ne doit etre actif, meme avec un ancien choix allow. Le code et toutes les cles restent conserves. Les paragraphs ci-dessous decrivent l'integration en pause.
+
+Pour restaurer deliberement : confirmer les filtres de contenu avec le fournisseur, remettre ce drapeau a true, reconstruire et verifier avant deploiement. La suspension locale ne modifie pas le site deja deploye : publier le nouveau build par le processus habituel, invalider les caches si necessaire et recharger les pages ouvertes. Aucune publication n'a ete effectuee par cette modification.
+
 # blockblast.fr Astro
 
 Projet Astro statique pour `https://blockblast.fr`, clone du pattern Jigsolitaire adapte en francais pour un site independant de jeu de blocs.

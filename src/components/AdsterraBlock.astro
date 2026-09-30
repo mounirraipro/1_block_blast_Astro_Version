@@ -1,8 +1,11 @@
 ---
+import { ADSTERRA_ENABLED } from "@/data/advertising";
 ---
+{ADSTERRA_ENABLED && (
 <p class="adsterra-sponsored-link">
   <a href="https://www.profitableratecpmnetwork.com/ep5m3gfi22?key=1e01a1597f957a126d4c93baf2f7e322" target="_blank" rel="sponsored nofollow noopener noreferrer" data-adsterra-smartlink>Offre sponsorisée <span>(nouvel onglet)</span></a>
 </p>
+)}
 <style>
   .adsterra-sponsored-link { display: none; }
   @media (min-width: 1024px) { .adsterra-sponsored-link { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin: 1.5rem auto; padding: 0 1rem; font-size: 0.75rem; color: #64748b; } }

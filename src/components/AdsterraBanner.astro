@@ -1,15 +1,18 @@
 ---
+import { ADSTERRA_ENABLED } from "@/data/advertising";
 type Props = { format?: "leaderboard" | "skyscraper" };
 const { format = "leaderboard" } = Astro.props;
 const unit = format === "leaderboard"
   ? { key: "0fe0be46f2556cae7a00611434c290ba", width: 728, height: 90 }
   : { key: "b3835aaa2a375ba813849deb163c0827", width: 160, height: 600 };
 ---
+{ADSTERRA_ENABLED && (
 <div class:list={["adsterra-slot", format]}>
   <section class="adsterra-banner" aria-label="Publicité Adsterra" data-adsterra-banner data-key={unit.key} data-width={unit.width} data-height={unit.height}>
     <div class="adsterra-creative" data-adsterra-creative></div>
   </section>
 </div>
+)}
 <style>
   .adsterra-slot { container-type: inline-size; width: 100%; min-width: 0; margin: 0; }
   .adsterra-banner { display: none; width: fit-content; max-width: 100%; margin: 1.25rem auto; text-align: center; }

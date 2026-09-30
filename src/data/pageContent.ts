@@ -1,3 +1,4 @@
+import { ADSTERRA_ENABLED } from "@/data/advertising";
 import { siteConfig } from "@/data/siteConfig";
 
 export type ContentSection = {
@@ -140,7 +141,7 @@ export const pageContent = {
       },
       {
         heading: "Vos choix",
-        body: "Les choix publicitaires en bas de page permettent d’autoriser ou de refuser les scripts Adsterra. Cette preference est conservee dans le stockage local du navigateur. Vous pouvez aussi effacer les cookies et les donnees du site dans les reglages de votre navigateur. Ce choix ne modifie pas les reglages des outils Google ni des jeux tiers.",
+        body: ADSTERRA_ENABLED ? "Les choix publicitaires en bas de page permettent d’autoriser ou de refuser les scripts Adsterra. Cette preference est conservee dans le stockage local du navigateur. Vous pouvez aussi effacer les cookies et les donnees du site dans les reglages de votre navigateur. Ce choix ne modifie pas les reglages des outils Google ni des jeux tiers." : "Les publicites Adsterra sont actuellement suspendues, y compris pour les visiteurs ayant deja donne leur autorisation. Vous pouvez effacer les donnees du site dans les reglages de votre navigateur. Les outils Google et les jeux tiers conservent leurs propres reglages.",
       },
     ],
   },

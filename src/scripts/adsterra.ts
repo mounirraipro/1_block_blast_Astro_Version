@@ -1,7 +1,11 @@
+import { ADSTERRA_ENABLED } from "../data/advertising";
+
 const preferenceKey = "blockblast-adsterra-choice-v1";
 const socialBarUrl = "https://pl31569451.profitableratecpmnetwork.com/a2/ff/4f/a2ff4fa9781365e2b94e8bee3146d957.js";
 
 export function initializeAdsterra() {
+  // The emergency pause overrides every saved consent choice and navigation.
+  if (!ADSTERRA_ENABLED) return;
   const preferences = document.querySelector<HTMLElement>("[data-adsterra-preferences]");
   if (!preferences || preferences.dataset.initialized) return;
   preferences.dataset.initialized = "true";
