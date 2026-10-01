@@ -49,7 +49,7 @@ export function initializeAdsterra() {
       const script = document.createElement("script");
       script.type = "text/javascript";
       script.async = false;
-      script.src = "https://www.highrevenueformat.com/" + slot.dataset.key + "/invoke.js";
+      script.src = slot.dataset.scriptSrc!;
       script.dataset.adsterraBannerScript = "true";
       script.onload = () => resolve();
       script.onerror = () => { slot.dataset.failed = "true"; delete slot.dataset.requested; resolve(); };

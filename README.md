@@ -85,3 +85,15 @@ Les conditions editeurs Adsterra, clauses 4.7 et 4.9, demandent un accord ecrit 
 Avant diffusion : confirmer la compatibilite du chargement direct conditionnel avec les tags delivres et le mecanisme de consentement requis. Si ces tags exigent une execution pendant le parsing HTML, demander les snippets JS ASYNC officiels pour les deux cles (avec conteneurs et instructions multi-emplacements), sans les reconstituer a partir de sources tierces. Ne pas confondre format iframe dans atOptions avec une permission d'encapsuler le tag dans notre propre iframe. Aucun parametre de consentement n'a ete invente et aucune configuration externe n'a ete modifiee.
 
 Sources : https://adsterra.com/publishers-terms-managed/ (4.7, 4.9) ; https://help-publishers.adsterra.com/en/articles/6144870-cookies-policy
+
+
+### Emplacements de l'accueil - ajustement du 1 octobre 2026
+
+- Desktop a partir de 1024 px : un 160x600 a gauche du jeu, un 728x90 entre les recommandations et la presentation, puis un 468x60 entre la presentation et les instructions.
+- De 900 a 1023 px : 160x600 a gauche, 320x50 sous le jeu, 468x60 apres la presentation.
+- De 520 a 899 px : 320x50 sous le jeu et 468x60 apres la presentation, sans rail.
+- Sous 520 px : 320x50 sous le jeu et 300x250 apres la presentation, sans rail. Les creations gardent leurs dimensions natives.
+- Le rail droit est prepare pour un second 160x600. Il ne produit actuellement ni element, ni requete, ni faux emplacement : `HOME_RIGHT_SKYSCRAPER` reste `null` dans `src/data/advertising.ts`. Il manque un deuxieme code Adsterra 160x600 distinct (cle atOptions et URL invoke.js exacte). Ne pas reutiliser la cle du rail gauche. Une verification de build interdit cette duplication.
+- Chaque code fourni apparait une seule fois dans le DOM de l'accueil. Les variantes sont masquees tant que leur taille ne convient pas. Les refus publicitaires enregistres restent prioritaires. La Social Bar reste exclue des pages de jeu.
+
+Adsterra demande deux codes differents pour deux bannieres de meme taille : https://adsterra.com/blog/how-banner-ads-make-money/ (section "The same banner ad code used twice"). Aucune affirmation de revenus ou d'impressions supplementaires n'est faite.
