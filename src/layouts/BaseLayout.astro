@@ -11,13 +11,14 @@ import { buildJsonLd, buildPageTitle, getCanonicalUrl, getSeoForPath, withTraili
 
 type Props = {
   adRail?: boolean;
+  homeDesign?: boolean;
   title?: string;
   description?: string;
   seo?: Partial<SeoPage>;
   structuredData?: unknown[];
 };
 
-const { title, description, seo = {}, structuredData = [], adRail = true } = Astro.props;
+const { title, description, seo = {}, structuredData = [], adRail = true, homeDesign = false } = Astro.props;
 
 const pathname = Astro.url.pathname;
 const adPath = pathname.replace(/\/$/, "") || "/";
@@ -93,7 +94,7 @@ const routeHref = (path: string) => withTrailingSlash(path);
     {siteConfig.socialHandle && <meta name="twitter:site" content={siteConfig.socialHandle} />}
     {jsonLd.map((schema) => <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />)}
   </head>
-  <body class="min-h-screen bg-white text-copy antialiased">
+  <body class:list={["min-h-screen bg-white text-copy antialiased", { "homepage-redesign": homeDesign }]}>
     <GoogleTags placement="body" />
     <a
       class="fixed left-3 top-3 z-[100] -translate-y-24 rounded-lg bg-ink px-4 py-2.5 text-sm font-extrabold text-white no-underline transition focus:translate-y-0"
@@ -104,7 +105,7 @@ const routeHref = (path: string) => withTrailingSlash(path);
     <header class="site-header">
       <div class="nav-island" data-nav-root>
         <a class="brand-mark" href="/" aria-label={`${siteConfig.name} home`}>
-          <span class="brand-gem">B</span>
+          {homeDesign ? <svg class="home-brand-icon" viewBox="0 0 32 32" aria-hidden="true"><rect width="14" height="14" rx="3" fill="#438dff" /><rect x="18" width="14" height="14" rx="3" fill="#ff9947" /><rect y="18" width="14" height="14" rx="3" fill="#32d29d" /><rect x="18" y="18" width="14" height="14" rx="3" fill="#ff626b" /></svg> : <span class="brand-gem">B</span>}
           <span>{siteConfig.name}</span>
         </a>
 
@@ -125,7 +126,7 @@ const routeHref = (path: string) => withTrailingSlash(path);
         <div class="menu-panel">
           <div class="menu-topline">
             <a class="brand-mark" href="/" aria-label={`${siteConfig.name} home`}>
-              <span class="brand-gem">B</span>
+              {homeDesign ? <svg class="home-brand-icon" viewBox="0 0 32 32" aria-hidden="true"><rect width="14" height="14" rx="3" fill="#438dff" /><rect x="18" width="14" height="14" rx="3" fill="#ff9947" /><rect y="18" width="14" height="14" rx="3" fill="#32d29d" /><rect x="18" y="18" width="14" height="14" rx="3" fill="#ff626b" /></svg> : <span class="brand-gem">B</span>}
               <span>{siteConfig.name}</span>
             </a>
             <button class="menu-close" type="button" aria-label="Fermer le menu" data-menu-close>Fermer</button>
@@ -147,7 +148,7 @@ const routeHref = (path: string) => withTrailingSlash(path);
     </header>
 
     <main id="main-content" class="min-h-[72vh]">
-      {ADSTERRA_ENABLED && <div class="site-leaderboard"><AdsterraPlacement /></div>}
+      {ADSTERRA_ENABLED && !homeDesign && <div class="site-leaderboard"><AdsterraPlacement /></div>}
       <div class:list={["site-ad-layout", { "with-ad-rail": ADSTERRA_ENABLED && adRail }]}><div class="site-page-content"><slot /></div>
         {ADSTERRA_ENABLED && adRail && <aside class="site-ad-rail" aria-label="Publicité"><AdsterraPlacement placement="rail" /></aside>}
       </div>
