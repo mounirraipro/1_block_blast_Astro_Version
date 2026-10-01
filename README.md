@@ -1,8 +1,10 @@
-## Adsterra suspendu — 30 septembre 2026
+## Adsterra reactive pour test - 1 octobre 2026
 
-`src/data/advertising.ts` contient `ADSTERRA_ENABLED = false` : aucun emplacement, Smartlink, panneau de consentement ni chargeur Adsterra ne doit etre actif, meme avec un ancien choix allow. Le code et toutes les cles restent conserves. Les paragraphs ci-dessous decrivent l'integration en pause.
+`src/data/advertising.ts` contient `ADSTERRA_ENABLED = true`, a la demande explicite du proprietaire. Les placements desktop existants sont restaures, avec les choix de consentement conserves. Aucun nouveau format ni changement de compte. Les textes de confidentialite et de cookies suivent automatiquement ce drapeau.
 
-Pour restaurer deliberement : confirmer les filtres de contenu avec le fournisseur, remettre ce drapeau a true, reconstruire et verifier avant deploiement. La suspension locale ne modifie pas le site deja deploye : publier le nouveau build par le processus habituel, invalider les caches si necessaire et recharger les pages ouvertes. Aucune publication n'a ete effectuee par cette modification.
+Le support Adsterra a indique avoir filtre des annonceurs precis et recommande de vider cache/cookies puis de retester apres 15 minutes. Cela ne confirme pas un filtrage exhaustif des categories ni l'adequation des creations a tous les publics. Les controles locaux utilisent des scripts simules et ne valident pas le contenu publicitaire reel.
+
+Arret rapide : remettre le drapeau a false, reconstruire et deployer. Cette restauration locale n'est pas publiee : utiliser le processus habituel pour publier le nouveau build, puis recharger les pages ouvertes et invalider les caches si necessaire. Ne pas cliquer les annonces pour les tester.
 
 # blockblast.fr Astro
 
