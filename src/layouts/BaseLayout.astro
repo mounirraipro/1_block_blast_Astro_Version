@@ -1,7 +1,7 @@
 ---
 import { ADSTERRA_ENABLED } from "@/data/advertising";
 import "@/styles/global.css";
-import AdsterraBanner from "@/components/AdsterraBanner.astro";
+import AdsterraPlacement from "@/components/AdsterraPlacement.astro";
 import AdsterraBlock from "@/components/AdsterraBlock.astro";
 import AdsterraPreferences from "@/components/AdsterraPreferences.astro";
 import GoogleTags from "@/components/GoogleTags.astro";
@@ -59,6 +59,10 @@ const routeHref = (path: string) => withTrailingSlash(path);
 <html lang={siteConfig.language}>
   <head>
     <meta charset="UTF-8" />
+    <script is:inline define:vars={{ adsEnabled: ADSTERRA_ENABLED }}>
+      try { const choice = localStorage.getItem("blockblast-adsterra-choice-v1"); if (!adsEnabled || (choice !== null && choice !== "allow")) document.documentElement.setAttribute("data-adsterra-disabled", ""); }
+      catch { document.documentElement.setAttribute("data-adsterra-disabled", ""); }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <GoogleTags placement="head" usePartytown={false} />
     <title>{pageTitle}</title>
@@ -143,17 +147,17 @@ const routeHref = (path: string) => withTrailingSlash(path);
     </header>
 
     <main id="main-content" class="min-h-[72vh]">
-      {ADSTERRA_ENABLED && <div class="site-leaderboard"><AdsterraBanner /></div>}
+      {ADSTERRA_ENABLED && <div class="site-leaderboard"><AdsterraPlacement /></div>}
       <div class:list={["site-ad-layout", { "with-ad-rail": ADSTERRA_ENABLED && adRail }]}><div class="site-page-content"><slot /></div>
-        {ADSTERRA_ENABLED && adRail && <aside class="site-ad-rail" aria-label="Publicité"><AdsterraBanner format="skyscraper" /></aside>}
+        {ADSTERRA_ENABLED && adRail && <aside class="site-ad-rail" aria-label="Publicité"><AdsterraPlacement placement="rail" /></aside>}
       </div>
-      {ADSTERRA_ENABLED && <div class="site-leaderboard site-leaderboard-bottom"><AdsterraBanner /></div>}
+      {ADSTERRA_ENABLED && !["/", "/play"].includes(adPath) && <div class="site-leaderboard site-leaderboard-bottom"><AdsterraPlacement placement="footer" /></div>}
       {ADSTERRA_ENABLED && <AdsterraBlock />}
     </main>
 
     {ADSTERRA_ENABLED && <AdsterraPreferences socialBar={!gameplayPage} />}
     <footer class="border-t border-line-strong bg-gradient-to-b from-[#f8fbff] to-white">
-      <div class="mx-auto grid w-[min(1120px,calc(100%-48px))] grid-cols-[minmax(240px,1.3fr)_repeat(4,minmax(120px,0.72fr))_minmax(220px,1fr)] gap-8 py-8 max-lg:grid-cols-3 max-sm:w-[calc(100%-28px)] max-sm:grid-cols-2">
+      <div class="mx-auto grid w-[min(1120px,calc(100%-48px))] grid-cols-[minmax(240px,1.3fr)_repeat(4,minmax(120px,0.72fr))_minmax(220px,1fr)] gap-8 py-8 max-xl:grid-cols-3 max-sm:w-[calc(100%-28px)] max-sm:grid-cols-2">
         <div class="max-sm:col-span-2">
           <a class="mb-4 inline-flex w-fit items-center gap-3 text-ink no-underline" href="/" aria-label={`${siteConfig.name} home`}>
             <span class="grid size-8 rotate-[30deg] place-items-center rounded-[10px] bg-game-green text-base font-black leading-none text-white">
@@ -197,7 +201,7 @@ const routeHref = (path: string) => withTrailingSlash(path);
           </div>
         </nav>
 
-        <form class="border-l border-line pl-8 max-lg:border-l-0 max-lg:pl-0 max-sm:col-span-2" action="/contact/" method="get">
+        <form class="border-l border-line pl-8 max-xl:border-l-0 max-xl:pl-0 max-sm:col-span-2" action="/contact/" method="get">
           <p class="mb-3 text-[0.72rem] font-black uppercase tracking-[0.1em] text-ink">Contact</p>
           <p class="mb-3 text-[0.84rem] leading-5 text-muted">Envoyez une question, une correction ou une remarque sur le site.</p>
           <div class="grid h-10 grid-cols-[minmax(0,1fr)_40px] overflow-hidden rounded-[7px] border border-line-strong bg-white">
@@ -240,9 +244,11 @@ const routeHref = (path: string) => withTrailingSlash(path);
 </html>
 
 <style>
-  .site-leaderboard { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+  .site-leaderboard { width: min(1120px, 100%); margin: 0 auto; }
   .site-page-content { min-width: 0; }
   .site-ad-rail { display: none; }
+  :global(html[data-adsterra-disabled]) .site-ad-rail { display: none; }
+  :global(html[data-adsterra-disabled]) .with-ad-rail { display: block; width: auto; }
   @media (min-width: 1600px) {
     .with-ad-rail { display: grid; grid-template-columns: minmax(0, 1fr) 160px; gap: 32px; width: min(1680px, calc(100% - 48px)); margin: 0 auto; align-items: start; }
     .site-ad-rail { display: block; padding-top: 2rem; }

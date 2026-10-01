@@ -1,27 +1,34 @@
 ---
 import { ADSTERRA_ENABLED } from "@/data/advertising";
-type Props = { format?: "leaderboard" | "skyscraper" };
+const units = {
+  leaderboard: { key: "0fe0be46f2556cae7a00611434c290ba", width: 728, height: 90 },
+  skyscraper: { key: "b3835aaa2a375ba813849deb163c0827", width: 160, height: 600 },
+  tablet: { key: "65be6445c30f2287e7757a826c0a92cc", width: 468, height: 60 },
+  compact: { key: "ca6f70a4d1332386663f3d261023c083", width: 160, height: 300 },
+  mobile: { key: "8bdb1389324ed22e93ff2b4c419c3822", width: 320, height: 50 },
+  rectangle: { key: "acf2e8ecfe101f3947382f790dc5c234", width: 300, height: 250 },
+};
+type Props = { format?: keyof typeof units };
 const { format = "leaderboard" } = Astro.props;
-const unit = format === "leaderboard"
-  ? { key: "0fe0be46f2556cae7a00611434c290ba", width: 728, height: 90 }
-  : { key: "b3835aaa2a375ba813849deb163c0827", width: 160, height: 600 };
+const unit = units[format];
 ---
 {ADSTERRA_ENABLED && (
 <div class:list={["adsterra-slot", format]}>
-  <section class="adsterra-banner" aria-label="Publicité Adsterra" data-adsterra-banner data-key={unit.key} data-width={unit.width} data-height={unit.height}>
+  <section class="adsterra-banner" aria-label="Publicité Adsterra" data-adsterra-banner data-key={unit.key} data-width={unit.width} data-height={unit.height} style={`--ad-width:${unit.width}px;--ad-height:${unit.height}px`}>
     <div class="adsterra-creative" data-adsterra-creative></div>
   </section>
 </div>
 )}
 <style>
   .adsterra-slot { container-type: inline-size; width: 100%; min-width: 0; margin: 0; }
-  .adsterra-banner { display: none; width: fit-content; max-width: 100%; margin: 1.25rem auto; text-align: center; }
-  .leaderboard .adsterra-banner { width: 728px; }
-  .skyscraper .adsterra-banner { width: 160px; }
-  .adsterra-creative { background: transparent; }
-  .adsterra-banner:not([data-requested]) { display: none !important; }
+  .adsterra-banner { display: none; width: var(--ad-width); min-height: var(--ad-height); margin: 1.25rem auto; text-align: center; }
+  .adsterra-creative { min-height: var(--ad-height); background: transparent; }
   .adsterra-creative :global(iframe) { display: block; border: 0; max-width: none; }
-  @media (min-width: 1024px) { @container (min-width: 728px) { .leaderboard .adsterra-banner { display: block; } } }
-  @media (min-width: 1200px) { @container (min-width: 160px) { .skyscraper .adsterra-banner { display: block; } } }
+  @container (min-width: 728px) { .leaderboard .adsterra-banner { display: block; } }
+  @container (min-width: 468px) { .tablet .adsterra-banner { display: block; } }
+  @container (min-width: 320px) { .mobile .adsterra-banner { display: block; } }
+  @container (min-width: 300px) { .rectangle .adsterra-banner { display: block; } }
+  @container (min-width: 160px) { .compact .adsterra-banner, .skyscraper .adsterra-banner { display: block; } }
+  .adsterra-banner[data-failed], :global(html[data-adsterra-disabled]) .adsterra-slot { display: none !important; }
   :global(.content-page-aside:has([data-adsterra-banner])), :global(.blog-article-aside:has([data-adsterra-banner])) { position: static; }
 </style>

@@ -24,7 +24,7 @@ export function initializeAdsterra() {
     if (enable) enable.hidden = allowed;
     if (disable) disable.hidden = !allowed;
     if (status) status.textContent = allowed
-      ? "Chargement automatique des publicités Adsterra actif sur ordinateur. Vous pouvez le désactiver ici."
+      ? "Chargement automatique des publicités Adsterra actif. Vous pouvez le désactiver ici."
       : "Les scripts publicitaires Adsterra sont désactivés.";
   };
   let bannerQueue: Promise<void> = Promise.resolve();
@@ -33,9 +33,9 @@ export function initializeAdsterra() {
     const width = Number(slot.dataset.width);
     const height = Number(slot.dataset.height);
     const holder = slot.querySelector<HTMLElement>("[data-adsterra-creative]");
-    if (!allowed || !desktop.matches || !holder || attempted.has(slot)) return;
+    if (!allowed || !holder || attempted.has(slot)) return;
     const container = slot.parentElement;
-    if (!container || container.getBoundingClientRect().width < width || !container.getClientRects().length || (width === 160 && innerWidth < 1200)) return;
+    if (!container || container.getBoundingClientRect().width < width || !container.getClientRects().length) return;
     slot.dataset.requested = "true";
     if (!slot.getClientRects().length || slot.getBoundingClientRect().width < width) { delete slot.dataset.requested; return; }
     attempted.add(slot);
@@ -43,7 +43,7 @@ export function initializeAdsterra() {
     // its format:"iframe" creative; there is no publisher iframe around the tag.
     // Do not overwrite atOptions until the preceding invoke.js has executed.
     bannerQueue = bannerQueue.then(() => new Promise<void>(resolve => {
-      if (!allowed || !desktop.matches || !slot.isConnected || !slot.getClientRects().length || container.getBoundingClientRect().width < width || (width === 160 && innerWidth < 1200)) {
+      if (!allowed || !slot.isConnected || !slot.getClientRects().length || container.getBoundingClientRect().width < width) {
         attempted.delete(slot); delete slot.dataset.requested; resolve(); return;
       }
       const script = document.createElement("script");
@@ -52,7 +52,7 @@ export function initializeAdsterra() {
       script.src = "https://www.highrevenueformat.com/" + slot.dataset.key + "/invoke.js";
       script.dataset.adsterraBannerScript = "true";
       script.onload = () => resolve();
-      script.onerror = () => { delete slot.dataset.requested; resolve(); };
+      script.onerror = () => { slot.dataset.failed = "true"; delete slot.dataset.requested; resolve(); };
       (window as Window & { atOptions?: object }).atOptions = {
         key: slot.dataset.key, format: "iframe", height, width, params: {},
       };
@@ -73,6 +73,7 @@ export function initializeAdsterra() {
   const refresh = () => { updateStatus(); slots.forEach(loadSlot); loadSocial(); };
   const choose = (value: boolean) => {
     allowed = value;
+    document.documentElement.toggleAttribute("data-adsterra-disabled", !allowed);
     if (preferences instanceof HTMLDetailsElement) preferences.open = false;
     try { localStorage.setItem(preferenceKey, value ? "allow" : "deny"); } catch { /* The choice still applies to this page. */ }
     if (!value) {

@@ -1,4 +1,6 @@
 ---
+import AdsterraPlacement from "@/components/AdsterraPlacement.astro";
+import { ADSTERRA_ENABLED } from "@/data/advertising";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { articles } from "@/data/articles";
 import { categories } from "@/data/gameData";
@@ -79,7 +81,7 @@ const homeStructuredData = [
 ];
 ---
 
-<BaseLayout title={siteConfig.name} description={siteConfig.description} structuredData={homeStructuredData}>
+<BaseLayout adRail={false} title={siteConfig.name} description={siteConfig.description} structuredData={homeStructuredData}>
   <section class="hero-play">
     <div class="home-game-lobby">
       <div class="game-bento-grid game-bento-grid-side" aria-label="Jeux disponibles">
@@ -96,6 +98,8 @@ const homeStructuredData = [
       <div class="hero-game">
         <iframe src="/game/?lang=fr" title="Jouer a Block Blast" loading="eager" allow="autoplay; fullscreen *" allowfullscreen></iframe>
       </div>
+      <div class="home-inline-ad"><AdsterraPlacement placement="inline" /></div>
+      {ADSTERRA_ENABLED && <aside class="home-game-ad" aria-label="Publicité"><AdsterraPlacement placement="rail" /></aside>}
       <div class="game-bento-grid game-bento-grid-side" aria-label="Autres jeux">
         {homeBentoRight.map((game, index) => (
           <a class:list={["game-bento-card", game.accentClass, { "game-bento-card-featured": index === 0 }]} href={game.href}>
@@ -293,3 +297,17 @@ const homeStructuredData = [
     })();
   </script>
 </BaseLayout>
+
+<style>
+  .home-game-ad { display: none; }
+  .home-inline-ad { order: 1; grid-column: 1 / -1; }
+  @media (min-width: 900px) {
+    .home-game-lobby:has(.home-game-ad) { grid-template-columns: minmax(0, 1fr) 160px; gap: 32px; align-items: start; }
+    .home-game-lobby:has(.home-game-ad) .hero-game { order: 0; min-width: 0; }
+    .home-game-ad { display: block; order: 1; }
+    .home-inline-ad { order: 2; }
+    .home-game-lobby:has(.home-game-ad) .game-bento-grid-side { grid-column: 1 / -1; order: 3; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto; }
+  }
+  :global(html[data-adsterra-disabled]) .home-game-ad { display: none; }
+  :global(html[data-adsterra-disabled]) .home-game-lobby:has(.home-game-ad) { grid-template-columns: minmax(0, 1fr); }
+</style>

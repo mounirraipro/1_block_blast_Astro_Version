@@ -1,6 +1,6 @@
 ## Adsterra reactive pour test - 1 octobre 2026
 
-`src/data/advertising.ts` contient `ADSTERRA_ENABLED = true`, a la demande explicite du proprietaire. Les placements desktop existants sont restaures, avec les refus explicites conserves. Aucun nouveau format ni changement de compte. Les textes de confidentialite et de cookies suivent automatiquement ce drapeau.
+`src/data/advertising.ts` contient `ADSTERRA_ENABLED = true`, a la demande explicite du proprietaire. Les placements sont actifs sur ordinateur, tablette et mobile, avec les refus explicites conserves. Les quatre nouveaux formats fournis par le proprietaire sont integres ; aucun changement de compte. Les textes de confidentialite et de cookies suivent automatiquement ce drapeau.
 
 Le support Adsterra a indique avoir filtre des annonceurs precis et recommande de vider cache/cookies puis de retester apres 15 minutes. Cela ne confirme pas un filtrage exhaustif des categories ni l'adequation des creations a tous les publics. Les controles locaux utilisent des scripts simules et ne valident pas le contenu publicitaire reel.
 
@@ -54,11 +54,17 @@ et rejouer fonctionnent sans pause publicitaire.
 
 ## Publicites Adsterra — desktop
 
-Toutes les pages Astro (accueil, jeu, articles, index, categories et pages legales) utilisent deux bannieres 728x90, une en haut et une apres le contenu principal, hors des commandes, a partir de 1024px de viewport et uniquement avec 728px disponibles. Les articles et pages de contenu utilisent leur colonne native pour le 160x600 a partir de 1200px. Les autres pages utilisent une colonne dediee sur les grands ecrans (1600px minimum). Deux occurrences de la banniere 728x90 et au plus une du 160x600 par document, chacune avec ses propres options. Aucun rafraichissement automatique. Adsterra indique que repeter le meme code ne multiplie pas les impressions comptabilisees par visiteur unique. Le lien sponsorise est une simple ligne en pied de contenu, sans carte ni faux bouton de jeu.
+Haut de chaque page : 320x50 sous 520px, 468x60 de 520 a 1023px, 728x90 a partir de 1024px, seulement si la largeur exacte tient. Une seule variante est chargee.
 
-Aucun format desktop n'est charge ou redimensionne sur mobile. Aucun nouveau code mobile n'a ete invente. Il n'y a pas de faux visuel, de texte de demonstration ou de mode preview dans le code livre. Les emplacements non demandes restent invisibles. Les legendes visibles autour des bannieres sont retirees ; les titres accessibles sont conserves. Le Smartlink reste identifie comme offre sponsorisee. Les creations reelles viennent uniquement du fournisseur.
+Accueil et /play/ : colonne de 160px a cote du jeu des 900px (160x300 jusqu'a 1199px, puis 160x600), separee par 32px, sans superposition. Les recommandations de l'accueil passent sous le jeu. Pas de second rail generique sur ces deux pages. Articles/guides gardent leur rail natif ; autres pages leur rail sur tres grands ecrans.
 
-A la demande explicite du proprietaire, les scripts se chargent automatiquement pour un choix absent ou allow sur desktop. Aucun clic initial, scroll ou bouton Autoriser. Un refus deny reste bloque, sans etre ecrase. Le panneau repliable en pied de page permet de desactiver, ou de reactiver apres refus. Un stockage inaccessible ou une valeur inconnue ne declenche pas de chargement automatique. Effacer les donnees efface aussi le refus. Le retrait recharge le document si un script publicitaire a demarre. GoogleTags reste independant et inchange.
+Le 300x250 se trouve apres le jeu sur accueil et /play/ a toutes les tailles, et en bas du contenu sur les autres pages. Il remplace la seconde occurrence du 728x90. Pas de duplication initiale d'une meme cle pour gonfler les impressions.
+
+Dimensions reservees, creatives jamais comprimees ni rognees, pas de rafraichissement automatique. Aucune demande pour les variantes masquees ou trop larges. Un resize peut charger une autre variante une seule fois par document. Une erreur reseau replie le slot sans nouvelle tentative ; un script sans evenement final peut bloquer la file suivante, sans bloquer le jeu. Les mocks restent hors depot.
+
+Anti-adblock : aucun contournement, proxy, detection speculative ou blocage du jeu. La solution officielle exige des codes de remplacement fournis par Adsterra, non disponibles ici.
+
+A la demande explicite du proprietaire, les scripts se chargent automatiquement pour un choix absent ou allow sur les formats adaptes a chaque ecran. Aucun clic initial, scroll ou bouton Autoriser. Un refus deny reste bloque, sans etre ecrase. Le panneau repliable en pied de page permet de desactiver, ou de reactiver apres refus. Un stockage inaccessible ou une valeur inconnue ne declenche pas de chargement automatique. Effacer les donnees efface aussi le refus. Le retrait recharge le document si un script publicitaire a demarre. GoogleTags reste independant et inchange.
 
 La Social Bar est active sur toutes les pages desktop sans iframe de jeu, y compris les index et pages legales. Elle reste exclue de l'accueil, de /play/ et des pages de jeux embarques : le fournisseur controle ses superpositions et aucune API documentee ne garantit de liberer les commandes de jeu. Les bannieres et Smartlink couvrent aussi ces pages. Pour activer la Social Bar pendant le jeu, faire valider un format non superpose par Adsterra ; aucun parametre de compte n'a ete modifie.
 

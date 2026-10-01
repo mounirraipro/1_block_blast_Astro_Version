@@ -5570,3 +5570,10 @@
     }
   }
 }
+
+/* Keep the existing three-column embedded-game layout within tablet widths. */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .embedded-game-layout { grid-template-columns: minmax(0, 1fr); }
+  .embedded-game-layout .embedded-game-frame { order: -1; }
+  .embedded-game-layout .game-bento-grid-side { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: auto; }
+}

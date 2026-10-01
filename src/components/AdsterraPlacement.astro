@@ -1,0 +1,20 @@
+---
+import AdsterraBanner from "./AdsterraBanner.astro";
+type Props = { placement?: "horizontal" | "footer" | "rail" | "inline" };
+const { placement = "horizontal" } = Astro.props;
+---
+<div class:list={["ad-placement", placement]}>
+  {placement === "horizontal" && <><div class="large"><AdsterraBanner /></div><div class="medium"><AdsterraBanner format="tablet" /></div><div class="small"><AdsterraBanner format="mobile" /></div></>}
+  {placement === "footer" && <AdsterraBanner format="rectangle" />}
+  {placement === "rail" && <><div class="tall"><AdsterraBanner format="skyscraper" /></div><div class="short"><AdsterraBanner format="compact" /></div></>}
+  {placement === "inline" && <AdsterraBanner format="rectangle" />}
+</div>
+<style>
+  .ad-placement { width: 100%; min-width: 0; }
+  .large, .medium, .small, .tall, .short { display: none; }
+  @media (max-width: 519px) { .small { display: block; } }
+  @media (min-width: 520px) and (max-width: 1023px) { .medium { display: block; } }
+  @media (min-width: 1024px) { .large { display: block; } }
+  @media (min-width: 900px) and (max-width: 1199px) { .short { display: block; } }
+  @media (min-width: 1200px) { .tall { display: block; } }
+</style>

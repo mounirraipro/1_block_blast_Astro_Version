@@ -1,4 +1,6 @@
 ---
+import AdsterraPlacement from "@/components/AdsterraPlacement.astro";
+import { ADSTERRA_ENABLED } from "@/data/advertising";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { getCategoryAccentClass } from "@/data/accentClasses";
 import { siteConfig } from "@/data/siteConfig";
@@ -17,12 +19,13 @@ const tips = [
 ];
 ---
 
-<BaseLayout
+<BaseLayout adRail={false}
   title={`Jouer a ${siteConfig.name} en ligne`}
   description="Jouez a Block Blast en ligne gratuitement sur navigateur, sans telechargement. Placez les blocs, effacez les lignes et gardez la grille ouverte."
 >
   <section class="play-stage" id="top">
     <div class="play-stage-bg" aria-hidden="true"></div>
+    <div class="play-with-ad">
     <div class="play-shell" data-game-shell>
       <iframe src="/game/?lang=fr" title="Jeu Block Blast" allow="autoplay; fullscreen *" allowfullscreen></iframe>
       <div class="play-float-controls">
@@ -34,7 +37,10 @@ const tips = [
         </button>
       </div>
     </div>
+    {ADSTERRA_ENABLED && <aside class="play-game-ad" aria-label="Publicité"><AdsterraPlacement placement="rail" /></aside>}
+    </div>
   </section>
+  <AdsterraPlacement placement="inline" />
 
 
   <section class="play-info-section">
@@ -113,3 +119,15 @@ const tips = [
     })();
   </script>
 </BaseLayout>
+
+<style>
+  .play-game-ad { display: none; }
+  .play-with-ad { position: relative; min-width: 0; }
+  @media (min-width: 900px) {
+    .play-with-ad:has(.play-game-ad) { display: grid; grid-template-columns: minmax(0, 1fr) 160px; gap: 32px; align-items: start; }
+    .play-shell { min-width: 0; }
+    .play-game-ad { display: block; }
+  }
+  :global(html[data-adsterra-disabled]) .play-game-ad { display: none; }
+  :global(html[data-adsterra-disabled]) .play-with-ad:has(.play-game-ad) { grid-template-columns: minmax(0, 1fr); }
+</style>
