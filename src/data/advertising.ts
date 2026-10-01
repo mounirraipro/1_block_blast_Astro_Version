@@ -3,12 +3,11 @@
 // Set false and rebuild/deploy to immediately disable all preserved placements.
 export const ADSTERRA_ENABLED = true;
 
-// Adsterra requires a separate code for a second banner of the same size.
-// Add the owner's second 160x600 atOptions key AND exact invoke.js URL here.
-// null deliberately produces no right-side markup, request, or placeholder.
+// Optional exact supplier code overrides for banner components.
 export type AdsterraBannerCode = { key: string; scriptUrl: string };
-export const HOME_RIGHT_SKYSCRAPER: AdsterraBannerCode | null = null;
 
+// The homepage uses skyscraper on the left and the existing compact unit on
+// the right. Every homepage placement uses a distinct code at its native size.
 export const ADSTERRA_BANNER_UNITS = {
   leaderboard: { key: "0fe0be46f2556cae7a00611434c290ba", width: 728, height: 90 },
   skyscraper: { key: "b3835aaa2a375ba813849deb163c0827", width: 160, height: 600 },

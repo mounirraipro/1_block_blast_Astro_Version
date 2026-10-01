@@ -1,5 +1,5 @@
 import type { APIRoute, GetStaticPaths } from "astro";
-import { ADSTERRA_ENABLED, ADSTERRA_BANNER_UNITS, HOME_RIGHT_SKYSCRAPER } from "../../data/advertising";
+import { ADSTERRA_ENABLED, ADSTERRA_BANNER_UNITS } from "../../data/advertising";
 
 // Static endpoints are not content pages and do not enter the sitemap.
 export const getStaticPaths: GetStaticPaths = () => {
@@ -7,7 +7,6 @@ export const getStaticPaths: GetStaticPaths = () => {
   const units = Object.values(ADSTERRA_BANNER_UNITS).map(unit => ({
     ...unit, scriptUrl: `https://www.highrevenueformat.com/${unit.key}/invoke.js`,
   }));
-  if (HOME_RIGHT_SKYSCRAPER) units.push({ ...HOME_RIGHT_SKYSCRAPER, width: 160, height: 600 });
   return units.map(unit => ({ params: { key: unit.key }, props: unit }));
 };
 

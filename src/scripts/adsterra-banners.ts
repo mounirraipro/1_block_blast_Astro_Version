@@ -1,9 +1,13 @@
-const REFRESH_MS = 40_000;
+const MIN_REFRESH_MS = 37_000;
+const MAX_REFRESH_MS = 50_000;
+// Uniform integer milliseconds, including both endpoints; one draw per cycle.
+const randomRefreshMs = () => MIN_REFRESH_MS + Math.floor(Math.random() * (MAX_REFRESH_MS - MIN_REFRESH_MS + 1));
 const HISTORY_KEY = "blockblast-adsterra-refresh-v1";
 const LOAD_TIMEOUT_MS = 15_000;
 const TICK_MS = 1_000;
 
 type BannerFrame = HTMLIFrameElement & { adsterraCanLoad?: () => boolean };
+type RefreshCycle = { requestedAt: number; intervalMs: number };
 
 type Slot = {
   element: HTMLElement;
@@ -23,23 +27,28 @@ type Slot = {
 
 export function initializeBanners(isAllowed: () => boolean) {
   const slots = new Map<HTMLElement, Slot>();
-  // A per-code, per-tab ledger survives remounts, navigation and BFCache. Only
-  // request times are stored; hidden time is never carried forward as credit.
-  let history: Record<string, number> = {};
+  // Preserve each chosen interval across remounts, navigation and BFCache so
+  // they cannot reroll a shorter wait. Hidden time is never stored as credit.
+  let history: Record<string, RefreshCycle> = {};
   let storageAvailable = true;
   let disposed = false;
   try {
     const value: unknown = JSON.parse(sessionStorage.getItem(HISTORY_KEY) ?? "{}");
     if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid banner history");
-    for (const [key, time] of Object.entries(value)) {
-      if (!/^[a-f0-9]{32}$/.test(key) || typeof time !== "number" || !Number.isFinite(time)) throw new Error("Invalid banner history");
+    for (const [key, saved] of Object.entries(value)) {
+      // Migrate the previous timestamp-only ledger without dropping cooldowns.
+      const cycle = typeof saved === "number" ? { requestedAt: saved, intervalMs: randomRefreshMs() } : saved;
+      if (!/^[a-f0-9]{32}$/.test(key) || !cycle || typeof cycle !== "object"
+        || typeof cycle.requestedAt !== "number" || !Number.isFinite(cycle.requestedAt)
+        || !Number.isInteger(cycle.intervalMs) || cycle.intervalMs < MIN_REFRESH_MS || cycle.intervalMs > MAX_REFRESH_MS) throw new Error("Invalid banner history");
+      history[key] = { requestedAt: cycle.requestedAt, intervalMs: cycle.intervalMs };
     }
-    history = value as Record<string, number>;
     sessionStorage.setItem(HISTORY_KEY, JSON.stringify(history));
   } catch { storageAvailable = false; }
 
-  const recordRequest = (key: string) => {
-    history[key] = Date.now();
+  const recordRequest = (key: string, newCycle = false) => {
+    if (newCycle || !history[key]) history[key] = { requestedAt: Date.now(), intervalMs: randomRefreshMs() };
+    else history[key].requestedAt = Date.now();
     try { sessionStorage.setItem(HISTORY_KEY, JSON.stringify(history)); }
     catch { storageAvailable = false; }
     return storageAvailable;
@@ -69,7 +78,7 @@ export function initializeBanners(isAllowed: () => boolean) {
   const mount = (slot: Slot) => {
     // Record before starting any async load, and never overlap old/new contexts.
     removeFrame(slot);
-    if (!recordRequest(slot.key)) return;
+    if (!recordRequest(slot.key, true)) return;
     const frame: BannerFrame = document.createElement("iframe");
     frame.width = String(slot.width);
     frame.height = String(slot.height);
@@ -115,7 +124,7 @@ export function initializeBanners(isAllowed: () => boolean) {
       slot.eligible = eligible;
       if (!eligible || (slot.frame && !slot.ready)) continue;
       const last = history[slot.key];
-      if (last === undefined || (slot.elapsed >= REFRESH_MS && Date.now() - last >= REFRESH_MS)) mount(slot);
+      if (last === undefined || (slot.elapsed >= last.intervalMs && Date.now() - last.requestedAt >= last.intervalMs)) mount(slot);
     }
   };
   const intersection = new IntersectionObserver(entries => {

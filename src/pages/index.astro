@@ -1,7 +1,7 @@
 ---
 import "@/styles/homepage.css";
 import AdsterraBanner from "@/components/AdsterraBanner.astro";
-import { ADSTERRA_ENABLED, HOME_RIGHT_SKYSCRAPER } from "@/data/advertising";
+import { ADSTERRA_ENABLED, ADSTERRA_BANNER_UNITS } from "@/data/advertising";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { articles } from "@/data/articles";
 import { categories } from "@/data/gameData";
@@ -9,9 +9,10 @@ import { externalGames } from "@/data/externalGames";
 import { siteConfig } from "@/data/siteConfig";
 import { brandAccentClass, getCategoryAccentClass } from "@/data/accentClasses";
 
-// Never duplicate the existing left-side unit to fill the matching rail.
-if (HOME_RIGHT_SKYSCRAPER?.key === "b3835aaa2a375ba813849deb163c0827") {
-  throw new Error("The right 160x600 banner needs its own Adsterra placement code.");
+// Each homepage format has one placement; never reuse another banner's code.
+const homeBannerKeys = Object.values(ADSTERRA_BANNER_UNITS).map(unit => unit.key);
+if (new Set(homeBannerKeys).size !== homeBannerKeys.length) {
+  throw new Error("Each homepage banner needs its own distinct Adsterra placement code.");
 }
 
 const recentPosts = articles.slice(0, 3);
@@ -97,7 +98,7 @@ const homeStructuredData = [
       <iframe src="/game/?lang=fr" title="Jouer a Block Blast" loading="eager" allow="autoplay; fullscreen *" allowfullscreen></iframe>
       <div class="home-player-toolbar"><span>Block Blast</span><button type="button" data-home-fullscreen>Plein écran<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4" /></svg></button></div>
     </div>
-    {ADSTERRA_ENABLED && HOME_RIGHT_SKYSCRAPER && <aside class="home-ad-right" aria-label="Publicité"><AdsterraBanner format="skyscraper" code={HOME_RIGHT_SKYSCRAPER} /></aside>}
+    {ADSTERRA_ENABLED && <aside class="home-ad-right" aria-label="Publicité"><AdsterraBanner format="compact" /></aside>}
   </section>
   <div class="home-mobile-ads"><AdsterraBanner format="mobile" /></div>
   <section class="home-recommendations" aria-labelledby="home-related-title">
