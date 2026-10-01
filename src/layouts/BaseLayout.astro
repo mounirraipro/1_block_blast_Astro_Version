@@ -61,7 +61,7 @@ const routeHref = (path: string) => withTrailingSlash(path);
   <head>
     <meta charset="UTF-8" />
     <script is:inline define:vars={{ adsEnabled: ADSTERRA_ENABLED }}>
-      try { const choice = localStorage.getItem("blockblast-adsterra-choice-v1"); if (!adsEnabled || (choice !== null && choice !== "allow")) document.documentElement.setAttribute("data-adsterra-disabled", ""); }
+      try { const choice = localStorage.getItem("blockblast-adsterra-choice-v1"); if (!adsEnabled || navigator.globalPrivacyControl === true || (choice !== null && choice !== "allow")) document.documentElement.setAttribute("data-adsterra-disabled", ""); }
       catch { document.documentElement.setAttribute("data-adsterra-disabled", ""); }
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

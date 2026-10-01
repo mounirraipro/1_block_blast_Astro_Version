@@ -1,13 +1,5 @@
 ---
-import { ADSTERRA_ENABLED, type AdsterraBannerCode } from "@/data/advertising";
-const units = {
-  leaderboard: { key: "0fe0be46f2556cae7a00611434c290ba", width: 728, height: 90 },
-  skyscraper: { key: "b3835aaa2a375ba813849deb163c0827", width: 160, height: 600 },
-  tablet: { key: "65be6445c30f2287e7757a826c0a92cc", width: 468, height: 60 },
-  compact: { key: "ca6f70a4d1332386663f3d261023c083", width: 160, height: 300 },
-  mobile: { key: "8bdb1389324ed22e93ff2b4c419c3822", width: 320, height: 50 },
-  rectangle: { key: "acf2e8ecfe101f3947382f790dc5c234", width: 300, height: 250 },
-};
+import { ADSTERRA_ENABLED, ADSTERRA_BANNER_UNITS as units, type AdsterraBannerCode } from "@/data/advertising";
 type Props = { format?: keyof typeof units; code?: AdsterraBannerCode };
 const { format = "leaderboard", code } = Astro.props;
 const unit = units[format];
@@ -16,7 +8,7 @@ const scriptUrl = code?.scriptUrl ?? `https://www.highrevenueformat.com/${key}/i
 ---
 {ADSTERRA_ENABLED && (
 <div class:list={["adsterra-slot", format]}>
-  <section class="adsterra-banner" aria-label="Publicité Adsterra" data-adsterra-banner data-key={key} data-script-src={scriptUrl} data-width={unit.width} data-height={unit.height} style={`--ad-width:${unit.width}px;--ad-height:${unit.height}px`}>
+  <section class="adsterra-banner" aria-label="Publicité Adsterra" data-adsterra-banner data-key={key} data-script-src={scriptUrl} data-frame-src={`/adsterra/${key}.html`} data-width={unit.width} data-height={unit.height} style={`--ad-width:${unit.width}px;--ad-height:${unit.height}px`}>
     <div class="adsterra-creative" data-adsterra-creative></div>
   </section>
 </div>

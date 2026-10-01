@@ -1,96 +1,93 @@
 import { ADSTERRA_ENABLED } from "../data/advertising";
+import { initializeBanners } from "./adsterra-banners";
 
 const preferenceKey = "blockblast-adsterra-choice-v1";
 const socialBarUrl = "https://pl31569451.profitableratecpmnetwork.com/a2/ff/4f/a2ff4fa9781365e2b94e8bee3146d957.js";
+const hasGpc = () => (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl === true;
+let current: { preferences: HTMLElement; dispose: () => void } | undefined;
 
 export function initializeAdsterra() {
-  // The emergency pause overrides every saved consent choice and navigation.
-  if (!ADSTERRA_ENABLED) return;
   const preferences = document.querySelector<HTMLElement>("[data-adsterra-preferences]");
-  if (!preferences || preferences.dataset.initialized) return;
-  preferences.dataset.initialized = "true";
-  let allowed = false;
-  let savedChoice: string | null = null;
+  if (current?.preferences === preferences) return;
+  current?.dispose();
+  current = undefined;
+  if (!ADSTERRA_ENABLED || !preferences) return;
+  const root = document.documentElement;
+  const events = new AbortController();
   const desktop = window.matchMedia("(min-width: 1024px)");
-  let socialLoaded = false;
-  try { savedChoice = localStorage.getItem(preferenceKey); allowed = savedChoice === null || savedChoice === "allow"; } catch { /* Fail closed when storage is unavailable. */ }
+  let allowed = false;
+  let gpc = hasGpc();
+  let socialLoaded = !!document.querySelector("script[data-adsterra-social]");
+  const readChoice = () => {
+    try {
+      const choice = localStorage.getItem(preferenceKey);
+      allowed = choice === null || choice === "allow";
+    } catch { allowed = false; }
+  };
+  readChoice();
   if (preferences instanceof HTMLDetailsElement) preferences.open = false;
-  const slots = [...document.querySelectorAll<HTMLElement>("[data-adsterra-banner]")];
-  const attempted = new WeakSet<HTMLElement>();
-  const status = preferences.querySelector<HTMLElement>("[data-adsterra-status]");
+  const permitted = () => ADSTERRA_ENABLED && allowed && !hasGpc() && !root.hasAttribute("data-adsterra-disabled");
   const updateStatus = () => {
+    root.toggleAttribute("data-adsterra-disabled", !allowed || gpc);
     const enable = preferences.querySelector<HTMLButtonElement>("[data-adsterra-allow]");
     const disable = preferences.querySelector<HTMLButtonElement>("[data-adsterra-deny]");
-    if (enable) enable.hidden = allowed;
-    if (disable) disable.hidden = !allowed;
-    if (status) status.textContent = allowed
-      ? "Chargement automatique des publicités Adsterra actif. Vous pouvez le désactiver ici."
-      : "Les scripts publicitaires Adsterra sont désactivés.";
+    if (enable) enable.hidden = allowed || gpc;
+    if (disable) disable.hidden = !allowed || gpc;
+    const status = preferences.querySelector<HTMLElement>("[data-adsterra-status]");
+    if (status) status.textContent = gpc
+      ? "Les publicités Adsterra sont désactivées par le signal de confidentialité global (GPC) de votre navigateur."
+      : allowed
+        ? "Chargement automatique des publicités Adsterra actif. Vous pouvez le désactiver ici."
+        : "Les scripts publicitaires Adsterra sont désactivés.";
   };
-  let bannerQueue: Promise<void> = Promise.resolve();
-  let bannerStarted = false;
-  const loadSlot = (slot: HTMLElement) => {
-    const width = Number(slot.dataset.width);
-    const height = Number(slot.dataset.height);
-    const holder = slot.querySelector<HTMLElement>("[data-adsterra-creative]");
-    if (!allowed || !holder || attempted.has(slot)) return;
-    const container = slot.parentElement;
-    if (!container || container.getBoundingClientRect().width < width || !container.getClientRects().length) return;
-    slot.dataset.requested = "true";
-    if (!slot.getClientRects().length || slot.getBoundingClientRect().width < width) { delete slot.dataset.requested; return; }
-    attempted.add(slot);
-    // The supplied tag runs directly in the page body. Only the provider creates
-    // its format:"iframe" creative; there is no publisher iframe around the tag.
-    // Do not overwrite atOptions until the preceding invoke.js has executed.
-    bannerQueue = bannerQueue.then(() => new Promise<void>(resolve => {
-      if (!allowed || !slot.isConnected || !slot.getClientRects().length || container.getBoundingClientRect().width < width) {
-        attempted.delete(slot); delete slot.dataset.requested; resolve(); return;
-      }
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.async = false;
-      script.src = slot.dataset.scriptSrc!;
-      script.dataset.adsterraBannerScript = "true";
-      script.onload = () => resolve();
-      script.onerror = () => { slot.dataset.failed = "true"; delete slot.dataset.requested; resolve(); };
-      (window as Window & { atOptions?: object }).atOptions = {
-        key: slot.dataset.key, format: "iframe", height, width, params: {},
-      };
-      bannerStarted = true;
-      holder.append(script);
-    }));
-  };
+  updateStatus();
+  const banners = initializeBanners(permitted);
   const loadSocial = () => {
-    if (!allowed || !desktop.matches || socialLoaded || preferences.dataset.socialBar !== "true") return;
+    if (!permitted() || !desktop.matches || socialLoaded || preferences.dataset.socialBar !== "true") return;
     socialLoaded = true;
-    if (document.querySelector("script[data-adsterra-social]")) return;
     const script = document.createElement("script");
     script.src = socialBarUrl;
     script.async = true;
     script.dataset.adsterraSocial = "true";
     document.body.append(script);
   };
-  const refresh = () => { updateStatus(); slots.forEach(loadSlot); loadSocial(); };
-  const choose = (value: boolean) => {
-    allowed = value;
-    document.documentElement.toggleAttribute("data-adsterra-disabled", !allowed);
-    if (preferences instanceof HTMLDetailsElement) preferences.open = false;
-    try { localStorage.setItem(preferenceKey, value ? "allow" : "deny"); } catch { /* The choice still applies to this page. */ }
-    if (!value) {
-      slots.forEach(slot => { slot.querySelector("[data-adsterra-creative]")?.replaceChildren(); attempted.delete(slot); delete slot.dataset.requested; });
-      // Direct tags may install listeners and timers outside their slot.
-      // Reload also cancels any queued/in-flight unit after withdrawal.
-      if (socialLoaded || bannerStarted) { location.reload(); return; }
-    }
-    refresh();
+  const applyChoice = () => {
+    gpc = hasGpc();
+    updateStatus();
+    banners.update();
+    // Only the existing Social Bar runs in the parent document. Its withdrawal
+    // still needs a reload; banner-only pages (including the game) never do.
+    if (!permitted() && socialLoaded) { location.reload(); return; }
+    loadSocial();
   };
-  preferences.querySelector("[data-adsterra-allow]")?.addEventListener("click", () => choose(true));
-  preferences.querySelector("[data-adsterra-deny]")?.addEventListener("click", () => choose(false));
+  const choose = (value: boolean) => {
+    if (hasGpc()) return;
+    allowed = value;
+    try { localStorage.setItem(preferenceKey, value ? "allow" : "deny"); } catch { /* Applies to this page only. */ }
+    if (preferences instanceof HTMLDetailsElement) preferences.open = false;
+    applyChoice();
+  };
+  preferences.querySelector("[data-adsterra-allow]")?.addEventListener("click", () => choose(true), { signal: events.signal });
+  preferences.querySelector("[data-adsterra-deny]")?.addEventListener("click", () => choose(false), { signal: events.signal });
   window.addEventListener("storage", event => {
-    if (event.key === preferenceKey || event.key === null) location.reload();
-  });
-  const observer = new ResizeObserver(() => slots.forEach(loadSlot));
-  slots.forEach(slot => { if (slot.parentElement) observer.observe(slot.parentElement); });
-  desktop.addEventListener("change", refresh);
-  refresh();
+    if (event.key === preferenceKey || event.key === null) { readChoice(); applyChoice(); }
+  }, { signal: events.signal });
+  desktop.addEventListener("change", loadSocial, { signal: events.signal });
+  const privacyTimer = window.setInterval(() => {
+    if (!preferences.isConnected) { disposeAdsterra(); initializeAdsterra(); return; }
+    if (gpc !== hasGpc()) applyChoice();
+  }, 1_000);
+  current = { preferences, dispose: () => { clearInterval(privacyTimer); events.abort(); banners.dispose(); } };
+  loadSocial();
 }
+
+function disposeAdsterra() {
+  current?.dispose();
+  current = undefined;
+}
+
+// Full navigation, BFCache and Astro client navigation each have explicit teardown.
+window.addEventListener("pagehide", disposeAdsterra);
+window.addEventListener("pageshow", () => initializeAdsterra());
+document.addEventListener("astro:before-swap", disposeAdsterra);
+document.addEventListener("astro:page-load", () => initializeAdsterra());
