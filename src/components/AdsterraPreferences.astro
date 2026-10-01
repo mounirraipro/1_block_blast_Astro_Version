@@ -6,13 +6,13 @@ const { socialBar = false } = Astro.props;
 {ADSTERRA_ENABLED && (
 <details id="advertising-preferences" class="advertising-preferences" aria-label="Choix publicitaires" data-adsterra-preferences data-social-bar={socialBar ? "true" : "false"}>
   <summary>Choix publicitaires</summary>
-  <p>Autoriser les publicités Adsterra et leurs technologies de suivi ? Votre choix est enregistré sur cet appareil. Vous pouvez le modifier ici à tout moment.</p>
+  <p>Sur ordinateur, ce site charge automatiquement des publicités Adsterra et leurs technologies de suivi, sauf si vous les avez désactivées. Vous pouvez modifier ce réglage sur cet appareil.</p>
   <div class="advertising-actions">
-    <button type="button" data-adsterra-allow>Autoriser</button>
-    <button type="button" data-adsterra-deny>Refuser / retirer</button>
+    <button type="button" data-adsterra-allow hidden>Réactiver les publicités</button>
+    <button type="button" data-adsterra-deny>Désactiver les publicités</button>
     <a href="/privacy-policy/#adsterra">En savoir plus</a>
   </div>
-  <p role="status" data-adsterra-status>Les scripts publicitaires Adsterra sont désactivés tant que vous ne les autorisez pas.</p>
+  <p role="status" data-adsterra-status>Les réglages publicitaires de cet appareil sont en cours de lecture.</p>
   <noscript>JavaScript est désactivé : les scripts publicitaires ne sont pas chargés.</noscript>
 </details>
 )}

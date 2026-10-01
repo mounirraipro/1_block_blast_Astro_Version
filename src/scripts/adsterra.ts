@@ -13,14 +13,18 @@ export function initializeAdsterra() {
   let savedChoice: string | null = null;
   const desktop = window.matchMedia("(min-width: 1024px)");
   let socialLoaded = false;
-  try { savedChoice = localStorage.getItem(preferenceKey); allowed = savedChoice === "allow"; } catch { /* Fail closed when storage is unavailable. */ }
-  if (preferences instanceof HTMLDetailsElement) preferences.open = !savedChoice && desktop.matches;
+  try { savedChoice = localStorage.getItem(preferenceKey); allowed = savedChoice === null || savedChoice === "allow"; } catch { /* Fail closed when storage is unavailable. */ }
+  if (preferences instanceof HTMLDetailsElement) preferences.open = false;
   const slots = [...document.querySelectorAll<HTMLElement>("[data-adsterra-banner]")];
   const attempted = new WeakSet<HTMLElement>();
   const status = preferences.querySelector<HTMLElement>("[data-adsterra-status]");
   const updateStatus = () => {
+    const enable = preferences.querySelector<HTMLButtonElement>("[data-adsterra-allow]");
+    const disable = preferences.querySelector<HTMLButtonElement>("[data-adsterra-deny]");
+    if (enable) enable.hidden = allowed;
+    if (disable) disable.hidden = !allowed;
     if (status) status.textContent = allowed
-      ? "Publicités Adsterra autorisées. Vous pouvez retirer votre choix ici."
+      ? "Chargement automatique des publicités Adsterra actif sur ordinateur. Vous pouvez le désactiver ici."
       : "Les scripts publicitaires Adsterra sont désactivés.";
   };
   let bannerQueue: Promise<void> = Promise.resolve();
